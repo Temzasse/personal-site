@@ -1,21 +1,31 @@
 {
   "name": "personal-site",
-  "type": "module",
-  "version": "0.0.1",
+  "version": "0.1.0",
+  "private": true,
   "scripts": {
-    "dev": "astro dev",
-    "start": "astro dev",
-    "build": "astro check && astro build",
-    "preview": "astro preview",
-    "astro": "astro"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "styled-system:generate": "panda codegen"
   },
   "dependencies": {
-    "@astrojs/check": "^0.4.1",
-    "@astrojs/mdx": "^2.1.1",
-    "@astrojs/rss": "^4.0.4",
-    "@astrojs/sitemap": "^3.0.5",
-    "@astrojs/vercel": "7.1.1",
-    "astro": "^4.3.2",
-    "typescript": "^5.3.3"
+    "@mdx-js/loader": "3.0.0",
+    "@mdx-js/react": "3.0.0",
+    "@next/mdx": "14.1.0",
+    "next": "14.1.0",
+    "react": "^18",
+    "react-dom": "^18"
+  },
+  "devDependencies": {
+    "@pandacss/dev": "0.30.2",
+    "@types/mdx": "2.0.11",
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "eslint": "8.56.0",
+    "eslint-config-next": "14.1.0",
+    "prettier": "3.2.5",
+    "typescript": "5.3.3"
   }
 }
