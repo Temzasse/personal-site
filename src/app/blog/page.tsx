@@ -5,7 +5,7 @@ export default async function Blog() {
   const posts = await getPosts();
 
   return (
-    <main>
+    <div>
       <h1>Blog</h1>
       <ul>
         {posts.map((post) => (
@@ -14,6 +14,6 @@ export default async function Blog() {
           </li>
         ))}
       </ul>
-    </main>
+    </div>
   );
 }

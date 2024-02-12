@@ -1,10 +1,11 @@
 import { defineConfig } from "@pandacss/dev";
+import { globalCss } from "@/styles/global";
 
 export default defineConfig({
   outdir: "src/styled-system",
   shorthands: false,
   preflight: true,
-  include: ["./src/**/*.{js,jsx,ts,tsx,astro}"],
+  include: ["./src/**/*.{js,jsx,ts,tsx}"],
   jsxFramework: "react",
   theme: {
     breakpoints: {
@@ -56,12 +57,15 @@ export default defineConfig({
           6: { value: "#86198f" },
         },
         neutral: {
-          1: { value: "#71717a" },
-          2: { value: "#52525b" },
-          3: { value: "#3f3f46" },
-          4: { value: "#27272a" },
-          5: { value: "#18181b" },
-          6: { value: "#09090b" },
+          1: { value: "rgba(150, 150, 150, 0.1)" },
+          2: { value: "rgba(150, 150, 150, 0.2)" },
+          3: { value: "rgba(150, 150, 150, 0.3)" },
+          4: { value: "rgba(150, 150, 150, 0.4)" },
+          5: { value: "rgba(150, 150, 150, 0.5)" },
+          6: { value: "rgba(150, 150, 150, 0.6)" },
+        },
+        background: {
+          value: "#000c18",
         },
         focusRing: {
           value: "rgba(16, 185, 129, 0.5)",
@@ -74,8 +78,63 @@ export default defineConfig({
         },
       },
     },
+    textStyles: {
+      $body: {
+        value: {
+          fontFamily: "var(--font-dm-sans)",
+          fontSize: rem(16),
+          lineHeight: "1.5",
+          lg: {
+            fontSize: rem(18),
+          },
+        },
+      },
+      $heading: {
+        1: {
+          value: {
+            fontFamily: "var(--font-dm-serif)",
+            fontSize: `clamp(${rem(48)}, 5vw, ${rem(72)})`,
+            lineHeight: "1",
+          },
+        },
+        2: {
+          value: {
+            fontFamily: "var(--font-dm-serif)",
+            fontSize: `clamp(${rem(24)}, 3vw, ${rem(34)})`,
+            lineHeight: "1",
+          },
+        },
+        3: {
+          value: {
+            fontFamily: "var(--font-dm-sans)",
+            fontWeight: "500",
+            fontSize: `clamp(${rem(14)}, 2vw, ${rem(18)})`,
+            lineHeight: "1",
+            textTransform: "uppercase",
+            letterSpacing: "0.8px",
+          },
+        },
+      },
+    },
   },
+  globalCss,
   utilities: {
+    visuallyHidden: {
+      className: "visually-hidden",
+      transform() {
+        return {
+          position: "absolute",
+          width: "1px",
+          height: "1px",
+          margin: "-1px",
+          padding: 0,
+          overflow: "hidden",
+          clip: "rect(0 0 0 0)",
+          whiteSpace: "nowrap",
+          border: 0,
+        };
+      },
+    },
     paddingHorizontal: {
       className: "padding-horizontal",
       values: "spacing",
@@ -93,6 +152,26 @@ export default defineConfig({
         return {
           "padding-top": value,
           "padding-bottom": value,
+        };
+      },
+    },
+    marginHorizontal: {
+      className: "margin-horizontal",
+      values: "spacing",
+      transform(value) {
+        return {
+          "margin-left": value,
+          "margin-right": value,
+        };
+      },
+    },
+    marginVertical: {
+      className: "margin-vertical",
+      values: "spacing",
+      transform(value) {
+        return {
+          "margin-top": value,
+          "margin-bottom": value,
         };
       },
     },

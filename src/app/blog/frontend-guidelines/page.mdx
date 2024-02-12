@@ -1,15 +1,98 @@
 export const metadata = {
   date: "2023-02-12",
   title: "Frontend Guidelines",
-  description: "Guidelines for frontend development"
+  description: "Guidelines for frontend development",
 };
 
 # Frontend Guidelines
 
-TODO
+This documentation provides guidelines for implementing high quality Web applications. Each guideline is marked with a priority level:
 
-This is a list in markdown:
+- 🟣 Essential
+- 🔵 Recommended
+- 🟢 Optional
 
-- One
-- Two
-- Three
+## 🟣 Localise UI text
+
+All UI text should be localised even if there is only one language used at the moment. This ensures that it is easy to add translations later.
+
+## 🟣 Use semantic HTML
+
+HTML provides multiple elements, such as buttons, a, nav, ul, li, etc., that have semantic meaning and provide unique native functionality to the element in question.
+
+- All clickable elements should be buttons.
+- All links should use the Link component.
+- Avoid having nested clickable elements, eg. button inside a link.
+- Lists should use ul / ol / li elements.
+- Texts should have a meaningful hierarchy that is not tied to the visuals, eg. it is okay to have a h1 that doesn’t map to the “title1“ text theme style.
+- Forms should be implemented with the form element and each input should have a label.
+- TODO: add more examples…
+
+## 🟣 Use consistent styling methods
+
+- Prefer single styling method instead of mix-and-matching multiple ones.
+- For example don’t add global style overrides or atomic classNames to individual elements if the rest of the app uses CSS-in-JS solution.
+- Use theme values instead of hard coded values.
+- Avoid inline styles unless they depend on actually dynamic values.
+- Parent elements should own the layout, avoid applying margins to child elements.
+- Prefer using UI kit components instead of creating custom ones.
+
+## 🟣 Code-split routes
+
+Routes are natural spot for code-splitting an application into multiple JS chunks in order to keep the size of the main app bundle smaller and only load code for a given route.
+
+## 🟣 Use route-level error boundaries
+
+An error in one route should not crash the whole application. The error boundary should optionally have a way to retry the action that caused the error (or simply offer a button to refresh the page).
+
+## 🟣 Avoid fetching data in useEffect
+
+Instead of manually fetching data in useEffect and storing the data in state and handling things like loading/error states, race conditions, request cancellation, automatic refetching, etc. you should use a data fetching library like [TanStack Query](https://tanstack.com/query/latest) for (REST) or [Apollo Client](https://www.apollographql.com/docs/react/) (GraphQL) that handle all these things for you.
+
+## 🔵 Avoid data fetching waterfalls
+
+Prefer fetching data at the route level instead of adding separate queries to child elements deeper in the component tree.
+
+## 🔵 Avoid premature optimisation
+
+Memoization adds extra visual and cognitive overhead when reading code. Don't memoize values or callbacks unless it is necessary for rendering performance reason.
+
+## 🔵 Prefer persisting state in URL
+
+For example you can store the current table filters or selected tab in the url so when a user reloads the page the UI state can be restored correctly.
+
+## 🔵 Provide common keyboard actions for UI components
+
+For example modals and other popover-style components should trap focus and be closable via ESC key. Dropdown selects and autocomplete inputs (combobox) should be navigatable with arrow keys.
+
+> ❗ Instead of building these kind of components ourselves we should use high quality unstyled UI component libraries such as [Radix UI](https://www.radix-ui.com/) or [React Aria](https://react-spectrum.adobe.com/react-aria/) which provide these kind functionalities out-of-the-box.
+
+## 🔵 Hide incomplete features behind feature flags
+
+With trunk based development workflow it is important to be able to keep shipping changes to production without having to maintain long lived feature branches. Feature flags allow devs to ship incomplete features to production without breaking the app.
+
+## 🟢 Prefer typed env variables
+
+Instead of accessing the env variables directly via process.env prefer storing all available env variables in a constant that is typed and use that, eg:
+
+```ts
+export const config = {
+  API_URL: process.env.API_URL as string,
+  ADMIN_API_URL: process.env.ADMIN_API_URL as string,
+} as const;
+
+export type Config = typeof config;
+```
+
+## 🟢 Lazy-load initially invisible content
+
+For example modals and popovers can be lazily imported to reduce the initial JS bundle size and improve initial page load time. See [React.lazy](https://react.dev/reference/react/lazy) or [Loadable Components](https://loadable-components.com/docs/getting-started/) for how to lazy-load components. Use dynamic imports for lazy-loading code that is not a React component.
+
+## 🟢 Preload data and code
+
+In order to enhance the user experience it is possible to preload data and code upon certain types of interaction, such as hover or focus, which can indicate that a user is about to navigate to a route or about to open a part of the UI to show some data. Preloading the code and data needed for a route or a component will make it faster to render that component.
+
+Preloading can be achieved with tools such as:
+
+- [TanStack Query Prefetching](https://tanstack.com/query/v5/docs/react/guides/prefetching) (formerly called react-query)
+- [Loadable Components](https://loadable-components.com/docs/prefetching/)

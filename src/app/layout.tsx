@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { DM_Sans, DM_Serif_Display } from "next/font/google";
 import { ReactNode } from "react";
-import "./globals.css";
+import "./index.css";
 
 import { Navbar } from "./Navbar";
 import { styled } from "@/styled";
@@ -44,6 +44,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <body className={`${dmSans.variable} ${dmSerif.variable}`}>
+        <GridDecoration />
         <Navbar />
         <Main>{children}</Main>
       </body>
@@ -53,8 +54,52 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 
 const Main = styled("main", {
   base: {
-    maxWidth: "1000px",
+    position: "relative",
+    width: "100%",
+    maxWidth: "1056px",
+    minHeight: "100%",
     margin: "0px auto",
-    padding: "$md",
+    padding: "$lg",
+    paddingTop: "30vh",
+
+    "&::before": {
+      content: "''",
+      position: "absolute",
+      top: "30vh",
+      left: "0px",
+      bottom: "0px",
+      width: "1px",
+      backgroundColor: "rgba(16, 185, 129, 0.1)",
+      "@media (max-width: 1056px)": {
+        display: "none",
+      },
+    },
+    "&::after": {
+      content: "''",
+      position: "absolute",
+      top: "30vh",
+      bottom: "0px",
+      right: "0px",
+      width: "1px",
+      backgroundColor: "rgba(16, 185, 129, 0.1)",
+      "@media (max-width: 1056px)": {
+        display: "none",
+      },
+    },
+  },
+});
+
+const GridDecoration = styled("div", {
+  base: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: "100vw",
+    height: "40vh",
+    backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' width='32' height='32' fill='none' stroke='rgba(16, 185, 129, 0.1)'%3e%3cpath d='M0 .5H31.5V32'/%3e%3c/svg%3e")`,
+    backgroundPosition: "center top -1px",
+    WebkitMaskImage: "linear-gradient(0deg,#0000,#000)",
+    maskImage: "linear-gradient(0deg,#0000,#000)",
+    pointerEvents: "none",
   },
 });

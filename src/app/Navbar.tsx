@@ -45,7 +45,8 @@ export function Navbar() {
 const Nav = styled("nav", {
   base: {
     position: "fixed",
-    bottom: "$lg",
+    zIndex: 1,
+    bottom: "calc(var(--env-safe-area-inset-bottom, 0px) + 1rem)",
     left: "50%",
     transform: "translateX(-50%)",
   },
@@ -54,9 +55,11 @@ const Nav = styled("nav", {
 const NavItems = styled("ul", {
   base: {
     display: "flex",
-    backgroundColor: "$primary.6",
+    backgroundColor: "$primary.6/50",
     borderRadius: "$full",
     overflow: "hidden",
+    backdropFilter: "blur(20px)",
+    boxShadow: "inset 0px 1px 2px rgba(255, 255, 255, 0.1)",
   },
 });
 
