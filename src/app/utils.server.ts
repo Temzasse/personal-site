@@ -6,6 +6,7 @@ type Post = {
   date: string;
   title: string;
   description: string;
+  image: string;
 };
 
 async function importPost(filename: string) {

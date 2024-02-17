@@ -1,6 +1,20 @@
 import { css } from "@/css";
 
 export const mdxStyles = css({
+  "& .hero": {
+    width: "100%",
+    height: "400px",
+    borderRadius: "$md",
+    marginBottom: "$2xl",
+    marginTop: "-10vh",
+    overflow: "hidden",
+    position: "relative",
+    backgroundColor: "$neutral.1",
+    boxShadow: "0px 0px 0px 1px rgba(150, 150, 150, 0.08)",
+    "& img": {
+      objectFit: "cover",
+    },
+  },
   "& > p": {
     marginVertical: "$md",
   },
@@ -8,7 +22,8 @@ export const mdxStyles = css({
     marginBottom: "$2xl",
   },
   "& h2": {
-    marginTop: "$2xl",
+    marginTop: "$4xl",
+    marginBottom: "$lg",
   },
   "& pre": {
     padding: "$md",
@@ -26,13 +41,15 @@ export const mdxStyles = css({
     marginVertical: "$md",
     paddingLeft: "$lg",
   },
-  "& ul li": {
+  "& li": {
     position: "relative",
+    marginBottom: "$xs",
+    textStyle: "$body",
 
-    "&::before": {
-      content: "—",
+    _before: {
+      content: '"—"',
       display: "inline-block",
-      color: "$primary.1",
+      color: "$primary.3",
       position: "absolute",
       marginLeft: "-$lg",
     },

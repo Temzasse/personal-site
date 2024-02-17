@@ -22,7 +22,7 @@ export const globalCss = defineGlobalStyles({
     minHeight: "100%",
     padding: 0,
     backgroundColor: "$background",
-    color: "#fff",
+    color: "$text.muted",
     fontSize: "16px",
     fontFamily: "var(--font-dm-sans)",
     textRendering: "optimizeLegibility",
@@ -36,16 +36,19 @@ export const globalCss = defineGlobalStyles({
   },
 
   h1: {
+    color: '$text',
     textStyle: "$heading.1",
-    "&::before": headingDecoration,
+    "&:not(.no-decoration)::before": headingDecoration,
   },
   h2: {
+    color: '$text',
     textStyle: "$heading.2",
-    "&::before": headingDecoration,
+    "&:not(.no-decoration)::before": headingDecoration,
   },
   h3: {
+    color: '$text',
     textStyle: "$heading.3",
-    "&::before": headingDecoration,
+    "&:not(.no-decoration)::before": headingDecoration,
   },
   p: {
     textStyle: "$body",

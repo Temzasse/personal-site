@@ -64,6 +64,14 @@ export default defineConfig({
           5: { value: "rgba(150, 150, 150, 0.5)" },
           6: { value: "rgba(150, 150, 150, 0.6)" },
         },
+        text: {
+          DEFAULT: {
+            value: "#ffffff",
+          },
+          muted: {
+            value: "#cecece",
+          },
+        },
         background: {
           value: "#000c18",
         },
@@ -84,23 +92,20 @@ export default defineConfig({
           fontFamily: "var(--font-dm-sans)",
           fontSize: rem(16),
           lineHeight: "1.5",
-          lg: {
-            fontSize: rem(18),
-          },
         },
       },
       $heading: {
         1: {
           value: {
             fontFamily: "var(--font-dm-serif)",
-            fontSize: `clamp(${rem(48)}, 5vw, ${rem(72)})`,
+            fontSize: `clamp(${rem(42)}, 5vw, ${rem(64)})`,
             lineHeight: "1",
           },
         },
         2: {
           value: {
             fontFamily: "var(--font-dm-serif)",
-            fontSize: `clamp(${rem(24)}, 3vw, ${rem(34)})`,
+            fontSize: `clamp(${rem(22)}, 3vw, ${rem(28)})`,
             lineHeight: "1",
           },
         },
@@ -119,6 +124,21 @@ export default defineConfig({
   },
   globalCss,
   utilities: {
+    borderGlow: {
+      className: "border-glow",
+      values: "colors",
+      transform(value) {
+        return {
+          borderImage: `linear-gradient(to right,
+            rgba(150, 150, 150, 0.1),
+            rgba(150, 150, 150, 0.1) 25%,
+            ${value} 50%,
+            rgba(150, 150, 150, 0.1) 75%,
+            rgba(150, 150, 150, 0.1) 100%
+          ) 1`,
+        };
+      },
+    },
     visuallyHidden: {
       className: "visually-hidden",
       transform() {

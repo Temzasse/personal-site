@@ -1,19 +1,31 @@
-import Link from "next/link";
+import { Stack, styled } from "@/styled";
 import { getPosts } from "../utils.server";
+import { PostCard } from "./PostCard";
 
 export default async function Blog() {
   const posts = await getPosts();
 
   return (
-    <div>
+    <Stack direction="column" gap="$2xl">
       <h1>Blog</h1>
-      <ul>
+      <Posts>
         {posts.map((post) => (
           <li key={post.slug}>
-            <Link href={post.slug}>{post.title}</Link>
+            <PostCard title={post.title} image={post.image} slug={post.slug} />
           </li>
         ))}
-      </ul>
-    </div>
+      </Posts>
+    </Stack>
   );
 }
+
+const Posts = styled("ul", {
+  base: {
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
+    gap: "$lg",
+    "& a": {
+      height: "100%",
+    },
+  },
+});
