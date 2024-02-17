@@ -21,9 +21,13 @@ const dmSerif = DM_Serif_Display({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://teemutaskula.com"),
   title: "Teemu Taskula's blog",
   description:
     "Personal blog of Teemu Taskula. I write about web development, TypeScript, React, and more.",
+  openGraph: {
+    images: [{ url: "/api/og", width: 1200, height: 627 }],
+  },
   icons: {
     icon: [
       {
