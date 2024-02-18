@@ -5,6 +5,10 @@ export default defineConfig({
   outdir: "src/styled-system",
   shorthands: false,
   preflight: true,
+  hash: {
+    className: true,
+    cssVar: false,
+  },
   include: ["./src/**/*.{js,jsx,ts,tsx}"],
   jsxFramework: "react",
   theme: {

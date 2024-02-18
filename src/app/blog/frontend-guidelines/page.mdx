@@ -3,20 +3,17 @@ export const metadata = {
   title: "Frontend Guidelines",
   description: "Guidelines for frontend development",
   image: "/images/frontend-guidelines.jpg",
-  imageCredit:
-    'Photo by <a href="https://unsplash.com/@ricvath?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash">Richard Horvath</a> on <a href="https://unsplash.com/photos/yellow-and-white-abstract-painting-_nWaeTF6qo0?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash">Unsplash</a>',
   openGraph: {
-    images: [
-      {
-        url: "/images/frontend-guidelines.jpg",
-        width: 1200,
-        height: 627,
-      },
-    ],
+    images: [`/api/og?title=${encodeURIComponent("Frontend Guidelines")}`],
   },
 };
 
-<Image src="/images/frontend-guidelines.jpg" alt="" />
+<HeroImage
+  src="/images/frontend-guidelines.jpg"
+  credit={
+    'Photo by <a href="https://unsplash.com/@ricvath?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash">Richard Horvath</a> on <a href="https://unsplash.com/photos/yellow-and-white-abstract-painting-_nWaeTF6qo0?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash">Unsplash</a>'
+  }
+/>
 
 # Frontend Guidelines
 

@@ -3,20 +3,19 @@ export const metadata = {
   title: "Persisting sessionStorage with Playwright",
   description: "TODO",
   image: "/images/playwright-session-storage.jpg",
-  imageCredit:
-    'Photo by <a href="https://unsplash.com/@simonppt?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash">SIMON LEE</a> on <a href="https://unsplash.com/photos/yellow-flower-in-white-background-WK5uLckIjRo?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash">Unsplash</a>',
   openGraph: {
     images: [
-      {
-        url: "/images/playwright-session-storage.jpg",
-        width: 1200,
-        height: 627,
-      },
+      `/api/og?title=${encodeURIComponent("Persisting sessionStorage with Playwright")}`,
     ],
   },
 };
 
-<Image src="/images/playwright-session-storage.jpg" alt="" />
+<HeroImage
+  src="/images/playwright-session-storage.jpg"
+  credit={
+    'Photo by <a href="https://unsplash.com/@simonppt?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash">SIMON LEE</a> on <a href="https://unsplash.com/photos/yellow-flower-in-white-background-WK5uLckIjRo?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash">Unsplash</a>'
+  }
+/>
 
 # Persisting sessionStorage with Playwright
 

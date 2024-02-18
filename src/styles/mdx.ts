@@ -1,20 +1,6 @@
 import { css } from "@/css";
 
 export const mdxStyles = css({
-  "& .hero": {
-    width: "100%",
-    height: "400px",
-    borderRadius: "$md",
-    marginBottom: "$2xl",
-    marginTop: "-10vh",
-    overflow: "hidden",
-    position: "relative",
-    backgroundColor: "$neutral.1",
-    boxShadow: "0px 0px 0px 1px rgba(150, 150, 150, 0.08)",
-    "& img": {
-      objectFit: "cover",
-    },
-  },
   "& > p": {
     marginVertical: "$md",
   },
