@@ -20,3 +20,185 @@ export const metadata = {
 # Persisting sessionStorage with Playwright
 
 TODO
+
+```ts
+// auth.setup.ts
+import { test as setup, Page } from "@playwright/test";
+import fs from "fs";
+import path from "path";
+
+setup("Login test user", async ({ page }) => {
+  await login({
+    page,
+    username: process.env.USER_EMAIL,
+    password: process.env.USER_PASSWORD,
+  });
+});
+
+const SESSION_DURATION = 60 * 60 * 1000; // 60min
+
+async function login({
+  page,
+  username,
+  password,
+}: {
+  page: Page;
+  username: string;
+  password: string;
+}) {
+  const sessionDir = path.join(__dirname, ".auth");
+  const sessionPath = path.join(sessionDir, `${username}-session.json`);
+
+  // First check if we have a valid session
+  if (fs.existsSync(sessionPath)) {
+    const { timestamp } = JSON.parse(fs.readFileSync(sessionPath, "utf-8")) as {
+      timestamp: number;
+    };
+
+    if (Date.now() - timestamp < SESSION_DURATION) {
+      return; // Session is still valid so we don't need to login again
+    }
+  }
+
+  // Perform login
+  await page.goto("/your-login-page-here");
+  // Do the steps to login...
+
+  // Persist session to a file so that it can be restored before running tests
+  const session = await page.evaluate(() => {
+    // Make sure the session storage has content in it
+    if (window.sessionStorage.length > 0) {
+      return JSON.stringify({
+        sessionStorage: window.sessionStorage,
+        timestamp: Date.now(),
+      });
+    }
+    return "";
+  });
+
+  // Don't persist an empty session
+  if (!session) return;
+
+  // Create .auth directory if it doesn't exist
+  if (!fs.existsSync(sessionDir)) {
+    fs.mkdirSync(sessionDir);
+  }
+
+  // Persist the session to disk
+  fs.writeFileSync(sessionPath, session, "utf-8");
+}
+```
+
+TODO
+
+```ts
+import { defineConfig, devices } from "@playwright/test";
+import dotenv from "dotenv";
+import path from "path";
+
+dotenv.config({
+  path: path.resolve(__dirname, ".env"),
+});
+
+export default defineConfig({
+  // ...
+  projects: [
+    /* Setup auth session */
+    {
+      name: "setup",
+      testMatch: /.*\.setup\.ts/,
+    },
+    {
+      name: "chromium",
+      dependencies: ["setup"],
+      use: { ...devices["Desktop Chrome"] },
+    },
+    {
+      name: "firefox",
+      dependencies: ["setup"],
+      use: { ...devices["Desktop Firefox"] },
+    },
+    {
+      name: "webkit",
+      dependencies: ["setup"],
+      use: { ...devices["Desktop Safari"] },
+    },
+  ],
+});
+```
+
+TODO
+
+```ts
+import { test as base, type BrowserContext } from "@playwright/test";
+import fs from "fs";
+import path from "path";
+
+export async function restoreSession({
+  context,
+  baseURL,
+  username,
+}: {
+  context: BrowserContext;
+  baseURL: string;
+  username: string;
+}) {
+  const session = fs.readFileSync(
+    path.join(__dirname, ".auth", `${username}-session.json`),
+    "utf-8",
+  );
+
+  await context.addInitScript(
+    ({ session, baseURL }) => {
+      const { sessionStorage } = JSON.parse(session);
+
+      // Only restore session for app's domain
+      if (window.location.hostname === new URL(baseURL).hostname) {
+        for (const [key, value] of Object.entries(sessionStorage)) {
+          window.sessionStorage.setItem(key, value as any);
+        }
+      }
+    },
+    { session, baseURL },
+  );
+}
+
+// See: https://playwright.dev/docs/test-fixtures#worker-scoped-fixtures
+export const test = base.extend<
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  {},
+  { user: "multi-company" | "single-company" }
+>({
+  /**
+   * By default tests use the multi company user.
+   * You can change the user by passing a different `user` at the start of
+   * the test file like so:
+   *
+   * ```ts
+   * import { test } from "~utils";
+   *
+   * test.use({ user: "single-company" });
+   *
+   * test("Some test", async ({ page }) => {
+   *  ...test code...
+   * })
+   * ```
+   */
+  user: ["multi-company", { scope: "worker" }],
+
+  // Automatically restore session before running tests
+  context: async ({ context, baseURL, user }, use) => {
+    await restoreSession({
+      context,
+      baseURL,
+      username:
+        user === "multi-company"
+          ? process.env.MULTI_COMPANY_USER_EMAIL
+          : process.env.SINGLE_COMPANY_USER_EMAIL,
+    });
+    await use(context);
+  },
+});
+
+export { expect } from "@playwright/test";
+```

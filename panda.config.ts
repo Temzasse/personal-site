@@ -98,6 +98,13 @@ export default defineConfig({
           lineHeight: "1.5",
         },
       },
+      $bodyLarge: {
+        value: {
+          fontFamily: "var(--font-dm-sans)",
+          fontSize: rem(22),
+          lineHeight: "1.5",
+        },
+      },
       $heading: {
         1: {
           value: {
@@ -115,12 +122,9 @@ export default defineConfig({
         },
         3: {
           value: {
-            fontFamily: "var(--font-dm-sans)",
-            fontWeight: "500",
-            fontSize: `clamp(${rem(14)}, 2vw, ${rem(18)})`,
+            fontFamily: "var(--font-dm-serif)",
+            fontSize: `clamp(${rem(18)}, 3vw, ${rem(20)})`,
             lineHeight: "1",
-            textTransform: "uppercase",
-            letterSpacing: "0.8px",
           },
         },
       },

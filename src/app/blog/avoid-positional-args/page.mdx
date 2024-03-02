@@ -1,0 +1,153 @@
+export const metadata = {
+  date: "2023-02-17",
+  title: "Avoid positional function arguments",
+  description:
+    "When you have a function with multiple arguments prefer to use an object instead of positional arguments.",
+  image: "/images/avoid-positional-args.jpg",
+  openGraph: {
+    images: [
+      `/api/og?title=${encodeURIComponent("Avoid positional function arguments")}`,
+    ],
+  },
+};
+
+<HeroImage
+  src="/images/avoid-positional-args.jpg"
+  credit={
+    'Photo by <a href="https://unsplash.com/@jrkorpa?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash">Jr Korpa</a> on <a href="https://unsplash.com/photos/pink-and-black-wallpaper-9XngoIpxcEo?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash">Unsplash</a>'
+  }
+/>
+
+# Avoid positional function arguments
+
+<span className="lead">
+  **tl;dr:** When you have a function with multiple arguments prefer to use an
+  object instead of positional arguments.
+</span>
+
+---
+
+Are you able to tell what each of the following function arguments is?
+
+```ts
+const user = createUser("John", "Doe", 30);
+```
+
+You can guess with relatively high confidence that the first two arguments are the first and last name of the user, but what about the third argument?
+Is it the age of the user? Or is it something else?
+
+What about this one?
+
+```ts
+const distance = calculateDistance(10, 20, 5, 25);
+```
+
+What do the numbers `10`, `20`, `5`, and `25` represent? Are they coordinates?
+If so, what coordinate system, which one is the x and which one is the y?
+Or are they latitude and longitude? Is the order `latitude1`, `latitude2`, `longitude1`, `longitude2` or is it `longitude1`, `latitude1`, `longitude2`, `latitude2`?
+
+In both of these examples, it's not immediately clear what each of the arguments represents.
+
+This is a common problem with functions that take multiple arguments.
+
+You might be able to guess what the arguments are by looking at the function name or by looking at the function implementation, but that's not ideal.
+
+Your IDE might show you inline type hints or show the names of the arguments on hover,
+but that doesn't work for example when you are reviewing code outside of your IDE.
+In order to efficiently do a code review you want to be able to understand what a function does by looking at its usage,
+without having to look at its implementation.
+
+So how can we make it easier to understand what a function does?
+
+## Objects to the rescue
+
+Instead of using positional arguments, you can use an object with named properties.
+
+For example, instead of this:
+
+```ts
+function createUser(firstName: string, lastName: string, age: number) {
+  // ...
+}
+```
+
+You can do this:
+
+```ts
+type User = {
+  firstName: string;
+  lastName: string;
+  age: number;
+};
+
+function createUser({ firstName, lastName, age }: User) {
+  // ...
+}
+```
+
+There is a bit more repetition in the second example, but it's much clearer what each of the arguments represents.
+
+So what do we exactly gain by using an object instead of positional arguments?
+
+### Readability
+
+The first and most obvious benefit is that it's much easier to understand what each of the arguments represents without having to rely on your IDE for hints.
+
+When you see a function call like this:
+
+```ts
+createUser({ firstName: "John", lastName: "Doe", age: 30 });
+```
+
+There is no ambiguity about what each of the arguments represents.
+
+### Discoverability
+
+When you are using a function that is new to you or that you haven't used in a while,
+you can import the function and then just press `Ctrl` + `Space` to see what the function expects.
+
+With positional arguments, you would have to hover over the function or look at the function implementation or the documentation to understand what each of the arguments represents.
+This makes will slow you down and make you less productive.
+
+### Optional arguments
+
+When you have a function with a lot of arguments, it's common to have some of the arguments be optional with or without default values.
+
+With positional arguments you have to place all the optional arguments at the end of the argument list or otherwise you will get a TS error like this:
+
+**"A required parameter cannot follow an optional parameter."**
+
+Additionally when calling a function with optional arguments you have pass `undefined` for the arguments you want to skip.
+
+For example:
+
+```ts
+function doSomething(a: string, b?: number, c?: boolean) {
+  // ...
+}
+
+doSomething("a", undefined, true);
+```
+
+This can muddy up the function call and make it less readable.
+
+With an object you can just omit the properties you don't want to pass:
+
+```ts
+doSomething({ a: "a", c: true });
+```
+
+### Are there any downsides?
+
+There are a few minor downsides to using an object instead of positional arguments.
+
+The first one is that there is a bit more repetition to define the type of the object and to destructure the object in the function signature.
+
+The second one is perfomance. Passing an object means that a new object has to be created every time the function is called.
+However, in 99% of the cases this is not a problem and the benefits of using an object instead of positional arguments outweigh the downsides.
+Modern JavaScript engines are extremely fast and optimized so creating a new object is not a problem in the vast majority of cases.
+If your software is performance sensitive, you can always use positional arguments in those few cases where it matters.
+
+## Conclusion
+
+Based on my experience as a software developer, I would highly recommend using an object instead of positional arguments in functions with multiple arguments.

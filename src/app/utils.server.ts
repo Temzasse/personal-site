@@ -14,13 +14,13 @@ async function importPost(filename: string) {
 
   return {
     slug: "/blog/" + filename.replace("/page.mdx", ""),
-    ...metadata
+    ...metadata,
   } as Post;
 }
 
 export async function getPosts() {
   const filenames = await glob(["*/page.mdx"], {
-    cwd: path.join(process.cwd(), "src/app/blog")
+    cwd: path.join(process.cwd(), "src/app/blog"),
   });
 
   const posts = await Promise.all(filenames.map(importPost));

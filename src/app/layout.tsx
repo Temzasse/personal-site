@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { DM_Sans, DM_Serif_Display } from "next/font/google";
+import { DM_Sans, DM_Serif_Display, DM_Mono } from "next/font/google";
 import { ReactNode } from "react";
 import "./index.css";
 
@@ -18,6 +18,13 @@ const dmSerif = DM_Serif_Display({
   weight: "400",
   display: "swap",
   variable: "--font-dm-serif",
+});
+
+const dmMono = DM_Mono({
+  subsets: ["latin"],
+  weight: "400",
+  display: "swap",
+  variable: "--font-dm-mono",
 });
 
 export const metadata: Metadata = {
@@ -47,7 +54,9 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
-      <body className={`${dmSans.variable} ${dmSerif.variable}`}>
+      <body
+        className={`${dmSans.variable} ${dmSerif.variable} ${dmMono.variable}`}
+      >
         <GridDecoration />
         <Navbar />
         <Main>{children}</Main>
