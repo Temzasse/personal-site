@@ -1,7 +1,7 @@
 import type { MDXComponents } from "mdx/types";
 
 import { mdxStyles } from "./styles/mdx";
-import { HeroImage } from "./app/blog/HeroImage";
+import { HeroImage } from "./components/HeroImage";
 
 export function useMDXComponents(components: MDXComponents): MDXComponents {
   return {

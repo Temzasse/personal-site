@@ -98,6 +98,13 @@ export default defineConfig({
           lineHeight: "1.5",
         },
       },
+      $bodySmall: {
+        value: {
+          fontFamily: "var(--font-dm-sans)",
+          fontSize: rem(14),
+          lineHeight: "1.4",
+        },
+      },
       $bodyLarge: {
         value: {
           fontFamily: "var(--font-dm-sans)",
@@ -110,22 +117,29 @@ export default defineConfig({
           value: {
             fontFamily: "var(--font-dm-serif)",
             fontSize: `clamp(${rem(42)}, 5vw, ${rem(64)})`,
-            lineHeight: "1",
+            lineHeight: "1.3",
           },
         },
         2: {
           value: {
             fontFamily: "var(--font-dm-serif)",
-            fontSize: `clamp(${rem(22)}, 3vw, ${rem(28)})`,
-            lineHeight: "1",
+            fontSize: `clamp(${rem(24)}, 3vw, ${rem(30)})`,
+            lineHeight: "1.3",
           },
         },
         3: {
           value: {
             fontFamily: "var(--font-dm-serif)",
-            fontSize: `clamp(${rem(18)}, 3vw, ${rem(20)})`,
-            lineHeight: "1",
+            fontSize: `clamp(${rem(20)}, 3vw, ${rem(22)})`,
+            lineHeight: "1.3",
           },
+        },
+      },
+      $code: {
+        value: {
+          fontFamily: "var(--font-dm-mono)",
+          fontSize: rem(14),
+          lineHeight: "1",
         },
       },
     },

@@ -8,7 +8,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "styled-system:generate": "panda codegen"
+    "styled-system:generate": "panda codegen",
+    "icons:generate": "figmage spritesheet --sprite-input ./src/assets/icons --sprite-out-dir ./public --sprite-ids-out-dir ./src/app/components"
   },
   "dependencies": {
     "@mdx-js/loader": "3.0.0",
@@ -29,6 +30,7 @@
     "@types/react-dom": "^18",
     "eslint": "8.56.0",
     "eslint-config-next": "14.1.0",
+    "figmage": "0.13.0",
     "prettier": "3.2.5",
     "typescript": "5.3.3"
   }

@@ -1,7 +1,10 @@
 "use client";
+
 import Link from "next/link";
 import { useSelectedLayoutSegment } from "next/navigation";
+
 import { styled } from "@/styled";
+import { Icon } from "./Icon";
 
 export function Navbar() {
   const segment = useSelectedLayoutSegment();
@@ -11,12 +14,22 @@ export function Navbar() {
       <NavItems>
         <NavItem>
           <NavLink href="/" isActive={segment === null}>
-            Home
+            <Icon
+              name="home"
+              size={24}
+              color={segment === null ? "primary.1" : "text"}
+            />
+            <span>Home</span>
           </NavLink>
         </NavItem>
         <NavItem>
           <NavLink href="/blog" isActive={segment === "blog"}>
-            Blog
+            <Icon
+              name="pen"
+              size={24}
+              color={segment === "blog" ? "primary.1" : "text"}
+            />
+            <span>Blog</span>
           </NavLink>
         </NavItem>
         <NavItem>
@@ -25,7 +38,8 @@ export function Navbar() {
             target="_blank"
             rel="noopener noreferrer"
           >
-            Twitter
+            <Icon name="twitter" size={24} color="text" />
+            <span>Twitter</span>
           </NavLink>
         </NavItem>
         <NavItem>
@@ -34,7 +48,8 @@ export function Navbar() {
             target="_blank"
             rel="noopener noreferrer"
           >
-            Github
+            <Icon name="github" size={24} color="text" />
+            <span>Github</span>
           </NavLink>
         </NavItem>
       </NavItems>
@@ -55,7 +70,7 @@ const Nav = styled("nav", {
 const NavItems = styled("ul", {
   base: {
     display: "flex",
-    backgroundColor: "$primary.6/50",
+    backgroundColor: "$primary.6/70",
     borderRadius: "$full",
     overflow: "hidden",
     backdropFilter: "blur(20px)",
@@ -72,7 +87,9 @@ const NavItem = styled("li", {
 const NavLink = styled(Link, {
   base: {
     position: "relative",
-    display: "block",
+    display: "flex",
+    alignItems: "center",
+    gap: "$sm",
     padding: "$md",
     hoverHighlight: 1,
 
@@ -81,6 +98,12 @@ const NavLink = styled(Link, {
     },
     "&:last-child": {
       paddingRight: "$lg",
+    },
+
+    smDown: {
+      "& span": {
+        visuallyHidden: 1,
+      },
     },
   },
   variants: {

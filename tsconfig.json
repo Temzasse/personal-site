@@ -16,6 +16,7 @@
     "paths": {
       "@/styled": ["./src/styled-system/jsx"],
       "@/css": ["./src/styled-system/css"],
+      "@/components/*": ["./src/components/*"],
       "@/*": ["./src/*"],
     }
   },

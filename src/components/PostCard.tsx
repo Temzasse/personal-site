@@ -1,14 +1,16 @@
 import { styled } from "@/styled";
 import Image from "next/image";
 import Link from "next/link";
+import { Text } from "./Text";
 
 type Props = {
   title: string;
+  titleLevel?: "h2" | "h3";
   image: string;
   slug: string;
 };
 
-export function PostCard({ title, image, slug }: Props) {
+export function PostCard({ title, titleLevel = "h2", image, slug }: Props) {
   return (
     <Container href={slug}>
       <Body>
@@ -16,7 +18,9 @@ export function PostCard({ title, image, slug }: Props) {
           <Image src={image} alt="" fill style={{ objectFit: "cover" }} />
         </ImageWrapper>
         <Content>
-          <h2 className="no-decoration">{title}</h2>
+          <Text variant="heading.3" as={titleLevel} className="no-decoration">
+            {title}
+          </Text>
         </Content>
       </Body>
     </Container>
