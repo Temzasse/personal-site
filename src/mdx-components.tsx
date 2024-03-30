@@ -6,7 +6,9 @@ import { HeroImage } from "./components/HeroImage";
 export function useMDXComponents(components: MDXComponents): MDXComponents {
   return {
     ...components,
-    wrapper: ({ children }) => <div className={mdxStyles}>{children}</div>,
+    wrapper: ({ children }) => (
+      <div className={`${mdxStyles} blog-post`}>{children}</div>
+    ),
     HeroImage: (props) => <HeroImage {...props} />,
   };
 }

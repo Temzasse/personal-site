@@ -90,6 +90,10 @@ const Main = styled("main", {
     borderGlow: "$primary.1",
     paddingBottom: "100px",
 
+    "&:has(.blog-post)": {
+      maxWidth: "75ch",
+    },
+
     mdDown: {
       paddingTop: "20vh",
     },

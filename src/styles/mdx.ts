@@ -4,6 +4,11 @@ export const mdxStyles = css({
   "& > p": {
     marginVertical: "$md",
   },
+  "& a": {
+    color: "$primary.1",
+    textDecoration: "underline",
+    textDecorationSkipInk: "auto",
+  },
   "& .lead > p": {
     textStyle: "$bodyLarge",
 

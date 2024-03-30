@@ -1,5 +1,7 @@
 import createMDX from "@next/mdx";
 import rehypeShiki from "@shikijs/rehype";
+import rehypeSlug from "rehype-slug";
+import rehypeAutolinkHeadings from "rehype-autolink-headings";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -14,7 +16,11 @@ const withMDX = createMDX({
   extension: /\.mdx?$/,
   options: {
     remarkPlugins: [],
-    rehypePlugins: [[rehypeShiki, { theme: "catppuccin-mocha" }]],
+    rehypePlugins: [
+      rehypeSlug,
+      rehypeAutolinkHeadings,
+      [rehypeShiki, { theme: "catppuccin-mocha" }],
+    ],
   },
 });
 
