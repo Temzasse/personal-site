@@ -1,0 +1,609 @@
+export const metadata = {
+  date: "2023-03-14",
+  title: "Exploring using Suspense with React Query",
+  description: "TODO",
+  image: "/images/exploring-query-suspense.jpg",
+  openGraph: {
+    images: [
+      `/api/og?title=${encodeURIComponent("Exploring using Suspense with React Query")}`,
+    ],
+  },
+};
+
+<HeroImage
+  src="/images/exploring-query-suspense.jpg"
+  credit={
+    'Photo by <a href="https://unsplash.com/@jjying?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash">JJ Ying</a> on <a href="https://unsplash.com/photos/multicolored-frames-azCTGObXR14?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash">Unsplash</a>'
+  }
+/>
+
+# Exploring using Suspense with React Query
+
+<span className="lead">
+  **tl;dr:** Use a custom [useSuspenseQueryDeferred](#adding-types) hook to
+  utilise React Suspense with React Query to avoid showing the suspense fallback
+  after the initial load of the data.
+</span>
+
+---
+
+React [Suspense](https://react.dev/reference/react/Suspense) is a novel mechanism
+to display a loading fallback and suspend rendering content while some async task
+is pending.
+
+Various data fetching libraries have built-in support for suspense and [React Query](https://tanstack.com/query/latest/docs/framework/react/guides/suspense)
+is one of those libraries.
+
+However it is not very well known how to use suspense with React Query and what
+are the best practices for doing so. Suspense for data fetching has been around
+quite a long time but it has not gained much popularity due to being considered
+somewhat experimental and not "production ready".
+
+Recently with RSC getting more stable and React introducing suspense-aware APIs
+like [startTransition](https://react.dev/reference/react/startTransition),
+[useTransition](https://react.dev/reference/react/useTransition), and [useDeferredValue](https://react.dev/reference/react/useDeferredValue)
+it is now a good time to revisit suspense for data fetching and see how it can
+be used with React Query.
+
+In this article I will describe my exploration of trying to use suspense with
+React Query and what issues I encountered and how I solved them.
+
+> ℹ️ Note: This article has the following premise:
+> **you never want to show the suspense fallback after the initial load of the data**.
+> If you don't agree with this premise please share your use cases on Twitter and
+> feel free to tag [me](https://twitter.com/teemu_taskula) in the discussion 😊
+
+## React Query without Suspense
+
+Before we dive into the details of using suspense with React Query let's first
+see how most devs fetch data with React Query without suspense.
+
+The default non-suspense way to fetch data with React Query looks something like the following:
+
+```tsx
+import { useQuery } from "@tanstack/react-query";
+
+function Example() {
+  const { data, isLoading, isError, isFetching } = useQuery({
+    queryKey: ["todos"],
+    queryFn: fetchTodos,
+  });
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (isError) {
+    return <div>Something went wrong</div>;
+  }
+
+  if (!data || data.length === 0) {
+    return <div>No todos found</div>;
+  }
+
+  return (
+    <div>
+      <h1>Todos</h1>
+
+      {isFetching && <p>Fetching...</p>}
+
+      <ul>
+        {data.map((todo) => (
+          <li key={todo.id}>{todo.title}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+```
+
+This should look familiar to you if you have used React Query before - at least
+most projects I've worked on fetch data this way.
+
+This is all good and well but it can get somewhat laborious to keep track of all
+the different states of the query in your component.
+
+All hooks and functions within the component need be aware of the potentially
+non-existent data which can result into many `if (data)` or `data.?`
+(or god forbid `data!.someField` 😱) checks and annotations in your code making
+it harder to understand.
+
+Additionally TypeScript doesn't automatically infer that the data is defined
+if you only check for loading and error states. You still need to manually
+check that the data is not `undefined` or use the `isSuccess` flag.
+
+```tsx
+function Example() {
+  const { data, isSuccess } = useQuery({
+    queryKey: ["todos"],
+    queryFn: fetchTodos,
+  });
+
+  // This hook has to be aware that data is possibly undefined
+  const something = useSomething(data?.someField);
+
+  function handleSomething() {
+    // Guard against data being undefined
+    if (!data) return;
+  }
+
+  // Bail out if data is not defined
+  if (!data) return null;
+
+  // Or check `isSuccess` flag
+  if (!isSuccess) return null;
+
+  // Now you can use data without TS complaining...
+}
+```
+
+You can quite easily get around these challenges by moving all functions, hooks,
+and JSX that depend on the data into a separate component and only render it when
+the data is available.
+
+However my experience is that most devs don't do this and end up
+putting way too much logic into the same component that has the query.
+This usually makes the code quite messy and hard to maintain.
+
+## Using Suspense
+
+Suspense provides an alternative way to handle these states. It enables us to
+suspend rendering a view until all of its queries have completed.
+This is very powerful when you have multiple queries in a view and want to
+delegate showing a loading indicator and error handling to a shared place above
+the component tree.
+
+React Query has built-in support for Suspense via the [useSuspenseQuery](https://tanstack.com/query/latest/docs/framework/react/reference/useSuspenseQuery) hook.
+When you use a suspended version of a query it will always have its data defined
+and when initially the query is loading the data it will suspend and delegate
+the loading and error views to the closest boundary component.
+
+Here's how it looks to use a suspended query:
+
+```tsx
+function Example() {
+  const { data } = useSuspenseQuery({
+    queryKey: ["todos"],
+    queryFn: fetchTodos,
+  });
+
+  if (data.length === 0) {
+    return <div>No todos found</div>;
+  }
+
+  return (
+    <ul>
+      {data.map((todo) => (
+        <li key={todo.id}>{todo.title}</li>
+      ))}
+    </ul>
+  );
+}
+```
+
+See! No need to handle loading or error states in the component itself!
+And the data is always defined so TypeScript won't complain about it possibly being undefined. 🎉
+
+You need to have a suspense and an error boundary somewhere above in the component
+tree in order to show a fallback while the data is being fetched and to handle
+any errors that might occur.
+
+```tsx
+import { Suspense } from "react";
+import { ErrorBoundary } from "react-error-boundary";
+
+function Parent() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ErrorBoundary fallback={<div>Something went wrong!</div>}>
+        <Example />
+      </ErrorBoundary>
+    </Suspense>
+  );
+}
+```
+
+This setup is the basis for using suspense for data fetching and it works great
+for simple cases where you only load the data once and don't need to refetch it
+with different query keys.
+
+> 💡 Tip: See React Query docs for adding a [QueryErrorResetBoundary](https://tanstack.com/query/latest/docs/framework/react/reference/QueryErrorResetBoundary)
+> next to the main [ErrorBoundary](https://github.com/bvaughn/react-error-boundary) component.
+
+But what if you want to refetch the data when the query key changes?
+
+By default suspense-enabled hooks like `useSuspenseQuery` will re-suspend the component
+when the query key changes, eg. when you change pagination, sorting, or some other filter parameter,
+causing the suspense boundary fallback to be displayed. This is not optimal and causes a bad UX for users.
+
+We can get around this default behaviour by utilising some additional suspense-aware features from React.
+
+## Deferring Suspense
+
+React has two ways to stop the default behaviour of suspense: `useTransition` and `useDeferredValue`.
+
+> ⚠️ Note: The first method with `useTransition` is not recommended in vast majority of cases!
+> However, it is important to know that it exists and it can be used when deferring the whole
+> query with `useDeferredValue` is not feasible.
+
+### Deferring with useTransition
+
+The first hook `useTransition` can be used to mark any state update as non-urgent
+which will tell React to keep showing the current UI while the component is “transitioning“
+via suspense into the new version of the UI. React will basically render the new
+UI in the background and replace the old UI only after the new UI is completely ready
+(eg. query has fetched new data with new query key).
+
+Here's an example that prevents suspension with `useTransition`:
+
+```tsx
+import { useTransition, useState } from "react";
+import { useSuspenseQuery } from "@tanstack/react-query";
+
+function Example() {
+  const [page, setPage] = useState(1);
+  const [isPending, startTransition] = useTransition();
+
+  const { data } = useSuspenseQuery({
+    queryKey: ["todos", page],
+    queryFn: () => fetchTodos({ page }),
+  });
+
+  function handleNextPage() {
+    startTransition(() => {
+      setPage((prev) => prev + 1);
+    });
+  }
+
+  function handlePrevPage() {
+    startTransition(() => {
+      setPage((prev) => prev - 1);
+    });
+  }
+
+  return (
+    <div>
+      {isPending && <p>Fetching...</p>}
+
+      <ul>{/* ...render todos... */}</ul>
+
+      <button onClick={handlePrevPage}>Previous</button>
+      <button onClick={handleNextPage}>Next</button>
+    </div>
+  );
+}
+```
+
+Now if the user updates the pagination page we wrap the related state setter in
+`startTransition` to tell React that we don't want to show the suspense fallback
+but instead keep showing the old UI while the query is fetching new data.
+
+The `useTransition` hook returns `isPending` variable that can be used to show an
+inline loading indicator to tell the user that new data is being fetched.
+This is much better than having the whole UI being replaced with the suspense fallback - nice! 👌
+
+However, there is one major downside with this approach: **we need wrap every query
+related state setter in startTransition!**
+
+This can be cumbersome to do and in some cases you might not have access to the
+state setter function if it is hidden behind a 3rd party component.
+
+Another problem is that the pending state is co-located with the state setter
+instead of with the query. This becomes especially problematic when you use the
+URL as the source of truth for your query parameters and you have multiple
+components that update different parts of the URL.
+
+For example:
+
+```tsx
+import { useTransition } from 'react';
+import { useSearchParams } from "react-router-dom";
+import { useSuspenseQuery } from "@tanstack/react-query";
+
+function Sidebar() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [isPending, startTransition] = useTransition();
+
+  function handleProjectSelect(id: string) {
+    startTransition(() => {
+      setSearchParams((params) => {
+        params.set("project", id);
+        return params;
+      });
+    });
+  }
+
+  return (
+    /* ...render list of projects... */
+  );
+}
+
+function Search() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [isPending, startTransition] = useTransition();
+
+  function handleInputChange(value) {
+    startTransition(() => {
+      setSearchParams((params) => {
+        if (value) {
+          params.set('search', value);
+        } else {
+          params.delete('search');
+        }
+        return params;
+      });
+    });
+  }
+
+  return (
+    /* ...render search input... */
+  );
+}
+
+function Table() {
+  const [searchParams] = useSearchParams();
+  const search = searchParams.get('search') || '';
+  const project = searchParams.get('project');
+
+  const { data } = useSuspenseQuery({
+    queryKey: ["todos", search, project],
+    queryFn: () => fetchTodos({ search, project }),
+  });
+
+  return (
+    /* ...render table... */
+  );
+}
+
+function Example() {
+  return (
+    <>
+      <Sidebar />
+      <Search />
+      <Table />
+    </>
+  );
+}
+```
+
+Each of these components are encapsulated and they simply update some URL parameter
+which then triggers a query to be refetched in a different component when new
+params are received via React Router's [useSearchParams](https://reactrouter.com/en/main/hooks/use-search-params) hook.
+
+The component that has the query would in this case have no way to show an inline
+loading indicator as the pending state lives in other components that have the
+`useTransition` hook.
+
+So, you should only utilise `useTransition` with suspense when you want to choose
+case-by-case whether to wrap a state setter with `startTransition` or not.
+
+As stated in the premise of this article: **in most cases you however always want
+to avoid showing the suspense boundary fallback after the initial load.**
+
+This is where the `useDeferredValue` hook comes into play.
+
+### Deferring with useDeferredValue
+
+So how can we make a query that only shows the suspense fallback on initial load?
+
+This behaviour can be accomplished with the help of `useDeferredValue` by creating
+a “deferred” version of the `queryKey` parameter. The deferred query will hold on
+to its previous value until the data has loaded and the UI will show the stale data
+for a moment.
+
+Let's make a custom hook to accomplish this:
+
+```tsx
+import { useDeferredValue } from "react";
+import { useSuspenseQuery } from "@tanstack/react-query";
+
+export function useSuspenseQueryDeferred(options) {
+  const deferredQueryKey = useDeferredValue(options.queryKey);
+
+  const isSuspending = options.queryKey !== deferredQueryKey;
+
+  const query = useSuspenseQuery({
+    ...options,
+    queryKey: deferredQueryKey,
+  });
+
+  return { ...query, isSuspending };
+}
+```
+
+By using our custom `useSuspenseQueryDeferred` hook instead of the default
+`useSuspenseQuery` hook we get exactly what we outlined before: the component
+suspends on initial load and shows the loading fallback but on subsequent fetches
+the component can use the `isSuspending` flag to show an inline loading indicator.
+
+However there is one small issue: `useDeferredValue` compares the old and the new
+value it receives with [Object.is](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/is)
+which means that the `isSuspending` value will change on every re-render as
+React Query uses arrays as the value of `queryKey`. This array is re-created on
+each render, even though its actual content doesn't change, meaning is is referentially different.
+
+So, we need to get a stable reference for the `queryKey` in order to make things
+work correctly. This can be achieved by doing a deep comparison based memoization like so:
+
+```tsx
+import { useDeferredValue } from "react";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { useDeepCompareMemo } from "use-deep-compare";
+
+export function useSuspenseQueryDeferred(options) {
+  const queryKey = useDeepCompareMemo(
+    () => options.queryKey,
+    [options.queryKey]
+  );
+
+  const deferredQueryKey = useDeferredValue(queryKey);
+
+  const isSuspending = queryKey !== deferredQueryKey;
+
+  const query = useSuspenseQuery({
+    ...options,
+    queryKey: deferredQueryKey,
+  });
+
+  return { ...query, isSuspending };
+}
+```
+
+Now the `queryKey` array has a stable reference and it only changes when the
+actual content of the array changes.
+
+Let's see how we can use our custom `useSuspenseQueryDeferred` hook in a component:
+
+```tsx
+function Example() {
+  const [page, setPage] = useState(1);
+
+  const { data, isSuspending } = useSuspenseQueryDeferred({
+    queryKey: ["todos", search, project],
+    queryFn: () => fetchTodos({ search, project }),
+  });
+
+  function handleNextPage() {
+    setPage((prev) => prev + 1);
+  }
+
+  function handlePrevPage() {
+    setPage((prev) => prev - 1);
+  }
+
+  return (
+    <div>
+      {isSuspending && <p>Fetching...</p>}
+
+      <ul>{/* ...render todos... */}</ul>
+
+      <button onClick={handlePrevPage}>Previous</button>
+      <button onClick={handleNextPage}>Next</button>
+    </div>
+  );
+}
+```
+
+See now we don't need to utilise `useTransition` anymore. We can just update the
+state normally and the query will automatically handle deferring the suspension,
+and it provides us a `isSuspending` flag which we can use to show an inline
+loading indicator.
+
+Pretty neat, huh? 🤩
+
+### Adding types
+
+The final version of our custom `useSuspenseQueryDeferred` hook with all the
+fancy TypeScript types looks like this:
+
+```tsx
+import { useDeferredValue } from "react";
+import { useDeepCompareMemo } from "use-deep-compare";
+
+import {
+  DefaultError,
+  QueryKey,
+  UseSuspenseQueryOptions,
+  useSuspenseQuery,
+} from "@tanstack/react-query";
+
+export function useSuspenseQueryDeferred<
+  TQueryFnData = unknown,
+  TError = DefaultError,
+  TData = TQueryFnData,
+  TQueryKey extends QueryKey = QueryKey,
+>(options: UseSuspenseQueryOptions<TQueryFnData, TError, TData, TQueryKey>) {
+  const queryKey = useDeepCompareMemo(
+    () => options.queryKey,
+    [options.queryKey]
+  );
+
+  const deferredQueryKey = useDeferredValue(queryKey);
+
+  const query = useSuspenseQuery({
+    ...options,
+    queryKey: deferredQueryKey,
+  });
+
+  const isSuspending = queryKey !== deferredQueryKey;
+
+  return { ...query, isSuspending };
+}
+```
+
+Feel free to copy this hook to your project and start using suspense with React Query!
+
+## Summary
+
+Using Suspense for data fetching allows you to delegate loading indicators and
+error handling to a shared place in a component tree making the data fetching
+related logic in components much simpler.
+
+React Query has built-in support for Suspense but it has some limitations that
+can be overcome by using either `useTransition` or `useDeferredValue` hooks.
+
+It is important to know that suspense based data fetching might not be
+a good fit in all situations. A good example where suspense doesn't make sense is
+an autocomplete input (aka combobox) where the results are dynamically loaded
+based on user's input.
+
+Also if you want to have more granular loading indicators and error handling you
+might not want to use suspense. Additionally, if you have below-the-fold content
+or otherwise initially non-visible content (like modals) that dynamically load
+data on demand (eg. when modal is opened) you probably should not use suspense for those.
+
+> 💁‍♂️ **A good rule of thumb is that suspense for data fetching should only be used for non-dependant data that is rendering-critical.** - Meaning any data that is not dependant on other data (to avoid fetch waterfalls) and is required to render a given view in a functionally complete state.
+
+---
+
+## Extra tip - improved spinners 🌀
+
+There is one more thing you can do to improve the user experience when using
+suspense for data fetching: delay showing the loading indicator for a short period
+of time to avoid flashing the spinner for very fast queries.
+
+We can bake this behaviour into our custom `useSuspenseQueryDeferred` hook by
+utilising the [spin-delay](https://github.com/smeijer/spin-delay) library:
+
+```tsx
+import { useDeferredValue } from "react";
+import { useDeepCompareMemo } from "use-deep-compare";
+import { useSpinDelay } from "spin-delay";
+
+import {
+  DefaultError,
+  QueryKey,
+  UseSuspenseQueryOptions,
+  useSuspenseQuery,
+} from "@tanstack/react-query";
+
+export function useSuspenseQueryDeferred<
+  TQueryFnData = unknown,
+  TError = DefaultError,
+  TData = TQueryFnData,
+  TQueryKey extends QueryKey = QueryKey,
+>(options: UseSuspenseQueryOptions<TQueryFnData, TError, TData, TQueryKey>) {
+  const queryKey = useDeepCompareMemo(
+    () => options.queryKey,
+    [options.queryKey]
+  );
+
+  const deferredQueryKey = useDeferredValue(queryKey);
+
+  const query = useSuspenseQuery({
+    ...options,
+    queryKey: deferredQueryKey,
+  });
+
+  // 👇 Update this 👇
+  const isSuspending = useSpinDelay(queryKey !== deferredQueryKey);
+
+  return { ...query, isSuspending };
+}
+```
+
+Now when using our custom hook the loading indicator will only be shown after
+a small delay and it will be shown for a minimum amount of time to avoid unwanted
+UI flickering.
+
+Nobody likes flickering spinners, right? 😵‍💫
