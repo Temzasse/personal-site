@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { DM_Sans, DM_Serif_Display, DM_Mono } from "next/font/google";
 import { ReactNode } from "react";
 import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 import "./index.css";
 import { Navbar } from "../components/Navbar";
@@ -74,6 +75,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           <rect width="100%" height="100%" filter="url(#noise)" />
         </GrainEffect>
         <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
