@@ -1,0 +1,215 @@
+export const metadata = {
+  date: "2024-11-16",
+  title: "Speedup Playwright authentication",
+  description:
+    "Speed up Playwright authentication by reusing a fresh auth session.",
+  image: "/images/speedup-playwright-auth.jpg",
+  openGraph: {
+    images: [
+      `/api/og?title=${encodeURIComponent("Speedup Playwright authentication")}`,
+    ],
+  },
+};
+
+<HeroImage
+  src="/images/speedup-playwright-auth.jpg"
+  credit={
+    'Photo by <a href="https://unsplash.com/@jonasvonwerne?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash">Jonas Von Werne</a> on <a href="https://unsplash.com/photos/a-city-street-filled-with-traffic-at-night-dLXuAZgpVJg?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash">Unsplash</a>'
+  }
+/>
+
+# Speedup Playwright authentication
+
+<span className="lead">
+  **tl;dr:** Persist and reuse the Playwright browser context (cookies, local
+  storage, etc.) for the duration of your auth session to skip the login step on
+  subsequent test suite runs.
+</span>
+
+---
+
+[Playwright](https://playwright.dev/) is a powerful end-to-end testing tool that can automate the browser
+to interact with your web application.
+
+Most web applications require authentication to access certain pages or features.
+Playwright has great [documentation](https://playwright.dev/docs/auth) on how to perform authentication before running your tests but it can be slow to rerun the auth step on every test suite run.
+Especially when you are iterating on your tests locally.
+
+Optimally you would like to reuse the authenticated browser state across test suite runs as long as the auth session is valid.
+
+First, let's go over the basic steps to authenticate with Playwright according to the official documentation and then we will see how to speed it up by reusing the authenticated browser state **across** test suite runs (by default Playwright only persists the state **within** a test suite run).
+
+<br />
+
+> ℹ️ **Note:** All the following steps assume you have created a directory, like `/playwright`, where you have your config and tests.
+
+## Basic Playwright authentication setup
+
+1. Create `.auth` directory to store the authenticated browser state:
+
+```bash
+# Inside /playwright directory
+mkdir -p .auth
+echo $'\n.auth' >> .gitignore
+```
+
+2. Add auth setup to `playwright.config.ts`:
+
+```ts
+import { defineConfig, devices } from "@playwright/test";
+
+export default defineConfig({
+  /* ...other config options... */
+  projects: [
+    // ------------ ADD THIS ------------
+    {
+      name: "setup",
+      testMatch: /.*\.setup\.ts/,
+    },
+    // ----------------------------------
+
+    {
+      name: "chromium",
+      dependencies: ["setup"],
+      use: {
+        ...devices["Desktop Chrome"],
+        storageState: ".auth/session.json",
+      },
+    },
+    // Other browsers...
+  ],
+});
+```
+
+3. Create a `auth.setup.ts` file to authenticate and save the browser state:
+
+```ts
+import { test as setup } from "@playwright/test";
+
+const authFile = path.join(__dirname, ".auth", "session.json");
+
+setup("authenticate", async ({ page }) => {
+  await page.goto("/login");
+  // Other login steps...
+
+  // Save the browser context after login
+  await page.context().storageState({ path: authFile });
+});
+```
+
+> ℹ️ **Note:** If you are using ESM modules you might get an error that `__dirname` is not defined.
+> To fix this you need to define `__dirname` manually:
+>
+> ```ts
+> import path from "path";
+> import url from "url";
+>
+> const __filename = url.fileURLToPath(import.meta.url);
+> const __dirname = path.dirname(__filename);
+> ```
+
+4. Finally, you can create your test files and use the authenticated browser state:
+
+`tests/some-test.spec.ts`
+
+```ts
+import { test } from "@playwright/test";
+
+test("example test 1", async ({ page }) => {
+  await page.goto("/some-protected-page");
+  // Other test steps...
+});
+```
+
+`tests/other-test.spec.ts`
+
+```ts
+import { test } from "@playwright/test";
+
+test("example test 2", async ({ page }) => {
+  await page.goto("/other-protected-page");
+  // Other test steps...
+});
+```
+
+Both of these test files will wait for the auth setup to finish and then use the authenticated browser state saved in `.auth/session.json`.
+
+However, when you rerun any of the tests Playwright will perform the auth setup again before running the test.
+This can significantly slow down the iteration speed when you are working on your tests locally.
+
+Next, let's see how to speed up the authentication by reusing the authenticated browser state across test suite runs.
+
+## Reuse authenticated browser state across test suite runs
+
+The idea is to persist a timestamp alongside the browser state and check if the auth session is still valid and reuse the current state if it is.
+
+All we need to do is to modify the `auth.setup.ts` file accordingly:
+
+```ts
+/* eslint-disable playwright/no-conditional-in-test */
+import fs from "fs";
+import path from "path";
+import url from "url";
+import { test as setup, type BrowserContext } from "@playwright/test";
+
+setup("authenticate", async ({ page }) => {
+  const session = readSession();
+
+  // Skip the login step if we have a valid session
+  if (session) return;
+
+  await page.goto("/login");
+  // Other login steps...
+
+  // Read the storage state and persist it manually
+  const storageState = await page.context().storageState();
+
+  writeSession(storageState);
+});
+
+// Helpers -------------------------------------------------------------
+
+// 👇 Change this to your session duration
+const sessionDuration = 8 * 60 * 60 * 1000; // 8 hours
+const sessionDir = path.join(__dirname, ".auth");
+const sessionPath = path.join(sessionDir, "session.json");
+
+type StorageState = Awaited<ReturnType<BrowserContext["storageState"]>>;
+type PersistedSession = StorageState & {
+  createdAt: number;
+};
+
+function readSession() {
+  if (fs.existsSync(sessionPath)) {
+    const session = JSON.parse(
+      fs.readFileSync(sessionPath, "utf-8")
+    ) as PersistedSession;
+
+    // Check if the session is still valid
+    if (Date.now() - session.createdAt < sessionDuration) {
+      return session;
+    }
+  }
+
+  return null;
+}
+
+function writeSession(storageState: StorageState) {
+  // Add createdAt so that we can check if the session is still valid
+  const session = {
+    ...storageState,
+    createdAt: Date.now(),
+  };
+
+  if (!fs.existsSync(sessionDir)) {
+    fs.mkdirSync(sessionDir);
+  }
+
+  fs.writeFileSync(sessionPath, JSON.stringify(session, null, 2), "utf8");
+}
+```
+
+Now when you iterate on your tests, Playwright will only perform the login step once every `sessionDuration` milliseconds (in this case 8 hours)
+and reuse the authenticated browser state across test suite runs making it much faster to run your tests.
+
+That's it. Enjoy faster Playwright test runs! 🎭💫

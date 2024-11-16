@@ -38,16 +38,21 @@ export const mdxStyles = css({
     },
   },
   "& blockquote": {
+    marginVertical: "$md",
     padding: "$md",
     backgroundColor: "$neutral.1",
     borderRadius: "$sm",
     borderLeft: "4px solid {colors.$primary.1}",
+
+    "& pre": {
+      marginTop: "$md",
+    },
   },
   "& ul": {
     marginVertical: "$md",
     paddingLeft: "$lg",
   },
-  "& li": {
+  "& ul > li": {
     position: "relative",
     marginBottom: "$xs",
     textStyle: "$body",
@@ -60,11 +65,18 @@ export const mdxStyles = css({
       marginLeft: "-$lg",
     },
   },
+  "& ol": {
+    marginVertical: "$md",
+    paddingLeft: "$sm",
+  },
+  "& ol > li": {
+    listStyle: "decimal",
+  },
   "& code": {
     fontSize: "14px",
     fontFamily: "var(--font-dm-mono), monospace",
   },
-  "& p > code": {
+  "& p > code, & li > code": {
     padding: "$xs",
     backgroundColor: "$neutral.1",
     borderRadius: "$sm",
@@ -74,5 +86,10 @@ export const mdxStyles = css({
     height: "1px",
     backgroundColor: "$neutral.1",
     marginVertical: "$lg",
+  },
+  "& .tweet": {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
