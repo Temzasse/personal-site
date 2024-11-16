@@ -27,7 +27,7 @@ function IconBase({ name, size, color, style, ...rest }: Props) {
       {...rest}
       aria-hidden
     >
-      <use href={`/icons-sprite.svg#${name}`} />
+      <use href={`/icon-sprite.svg#${name}`} />
     </svg>
   );
 }

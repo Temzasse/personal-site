@@ -34,12 +34,12 @@ export function Navbar() {
         </NavItem>
         <NavItem>
           <NavLink
-            href="https://twitter.com/teemu_taskula"
+            href="https://bsky.app/profile/taskuteemu.bsky.social"
             target="_blank"
             rel="noopener noreferrer"
           >
-            <Icon name="twitter" size={24} color="text" />
-            <span>Twitter</span>
+            <Icon name="bluesky" size={24} color="text" />
+            <span>Bluesky</span>
           </NavLink>
         </NavItem>
         <NavItem>
