@@ -1,7 +1,8 @@
 export const metadata = {
   date: "2023-04-01",
   title: "Exploring using Suspense with React Query",
-  description: "Learn how I explored using Suspense with React Query and what issues I encountered and how I solved them.",
+  description:
+    "Learn how I explored using Suspense with React Query and what issues I encountered and how I solved them.",
   image: "/images/exploring-query-suspense.jpg",
   openGraph: {
     images: [
@@ -400,21 +401,42 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 export function useSuspenseQueryDeferred(options) {
   const deferredQueryKey = useDeferredValue(options.queryKey);
 
-  const isSuspending = options.queryKey !== deferredQueryKey;
-
   const query = useSuspenseQuery({
     ...options,
     queryKey: deferredQueryKey,
   });
 
-  return { ...query, isSuspending };
+  query.isSuspending = options.queryKey !== deferredQueryKey;
+
+  return query;
 }
 ```
 
-By using our custom `useSuspenseQueryDeferred` hook instead of the default
-`useSuspenseQuery` hook we get exactly what we outlined before: the component
-suspends on initial load and shows the loading fallback but on subsequent fetches
-the component can use the `isSuspending` flag to show an inline loading indicator.
+> ✏️ **Updated (22.3.2025)**
+>
+> <br />
+> Changed the way the `isSuspending` flag is attached to the returned query object.
+>
+> Before it was done by spreading the `query` and adding the `isSuspending` property
+> to it:
+>
+> ```ts
+> const isSuspending = options.queryKey !== deferredQueryKey;
+> return { ...query, isSuspending };
+> ```
+>
+> <br />
+> This was not optimal as it would disable [render optimizations](https://tanstack.com/query/v5/docs/framework/react/guides/render-optimizations#tracked-properties)
+> in React Query.
+> <br />
+> The more optimal way is to attach the `isSuspending` flag directly to the query
+> object to maintain the property tracking in React Query.
+
+<br />
+By using our custom `useSuspenseQueryDeferred` hook instead of the default `useSuspenseQuery`
+hook we get exactly what we outlined before: the component suspends on initial load
+and shows the loading fallback but on subsequent fetches the component can use the
+`isSuspending` flag to show an inline loading indicator.
 
 However there is one small issue: `useDeferredValue` compares the old and the new
 value it receives with [Object.is](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/is)
@@ -431,6 +453,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { useDeepCompareMemo } from "use-deep-compare";
 
 export function useSuspenseQueryDeferred(options) {
+  // 👇 Memo the query key 👇
   const queryKey = useDeepCompareMemo(
     () => options.queryKey,
     [options.queryKey]
@@ -438,14 +461,14 @@ export function useSuspenseQueryDeferred(options) {
 
   const deferredQueryKey = useDeferredValue(queryKey);
 
-  const isSuspending = queryKey !== deferredQueryKey;
-
   const query = useSuspenseQuery({
     ...options,
     queryKey: deferredQueryKey,
   });
 
-  return { ...query, isSuspending };
+  query.isSuspending = queryKey !== deferredQueryKey;
+
+  return query;
 }
 ```
 
@@ -473,7 +496,7 @@ function Example() {
 
   return (
     <div>
-      {isSuspending && <p>Fetching...</p>}
+      {isSuspending && <p>Loading...</p>}
 
       <ul>{/* ...render todos... */}</ul>
 
@@ -501,9 +524,9 @@ import { useDeferredValue } from "react";
 import { useDeepCompareMemo } from "use-deep-compare";
 
 import {
-  DefaultError,
-  QueryKey,
-  UseSuspenseQueryOptions,
+  type DefaultError,
+  type QueryKey,
+  type UseSuspenseQueryOptions,
   useSuspenseQuery,
 } from "@tanstack/react-query";
 
@@ -520,18 +543,21 @@ export function useSuspenseQueryDeferred<
 
   const deferredQueryKey = useDeferredValue(queryKey);
 
-  const query = useSuspenseQuery({
+  const _query = useSuspenseQuery({
     ...options,
     queryKey: deferredQueryKey,
   });
 
-  const isSuspending = queryKey !== deferredQueryKey;
+  // Extend the query type to include the custom `isSuspending` flag
+  const query = _query as typeof _query & { isSuspending: boolean };
 
-  return { ...query, isSuspending };
+  query.isSuspending = queryKey !== deferredQueryKey;
+
+  return query;
 }
 ```
 
-Feel free to copy this hook to your project and start using suspense with React Query!
+Feel free to copy this hook to your project and start using Suspense with React Query!
 
 ## Summary
 
@@ -552,7 +578,14 @@ might not want to use suspense. Additionally, if you have below-the-fold content
 or otherwise initially non-visible content (like modals) that dynamically load
 data on demand (eg. when modal is opened) you probably should not use suspense for those.
 
-> 💁‍♂️ **A good rule of thumb is that suspense for data fetching should only be used for non-dependant data that is rendering-critical.** - Meaning any data that is not dependant on other data (to avoid fetch waterfalls) and is required to render a given view in a functionally complete state.
+> 💡 My rule of thumb is:
+>
+> <br />
+> **Suspense for data fetching should only be used for non-dependant data that is rendering-critical.**
+>
+> <br />
+> Meaning any data that is not dependant on other data (to avoid fetch waterfalls)
+> and is required to render a given view in a functionally complete state.
 
 ---
 
@@ -571,9 +604,9 @@ import { useDeepCompareMemo } from "use-deep-compare";
 import { useSpinDelay } from "spin-delay";
 
 import {
-  DefaultError,
-  QueryKey,
-  UseSuspenseQueryOptions,
+  type DefaultError,
+  type QueryKey,
+  type UseSuspenseQueryOptions,
   useSuspenseQuery,
 } from "@tanstack/react-query";
 
@@ -590,15 +623,17 @@ export function useSuspenseQueryDeferred<
 
   const deferredQueryKey = useDeferredValue(queryKey);
 
-  const query = useSuspenseQuery({
+  const _query = useSuspenseQuery({
     ...options,
     queryKey: deferredQueryKey,
   });
 
-  // 👇 Update this 👇
-  const isSuspending = useSpinDelay(queryKey !== deferredQueryKey);
+  const query = _query as typeof _query & { isSuspending: boolean };
 
-  return { ...query, isSuspending };
+  // 👇 Update this 👇
+  query.isSuspending = useSpinDelay(queryKey !== deferredQueryKey);
+
+  return query;
 }
 ```
 
