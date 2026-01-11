@@ -7,7 +7,7 @@
     "prebuild": "npm run styled-system:generate",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint .",
     "styled-system:generate": "panda codegen",
     "icons:generate": "figmage spritesheet --sprite-input ./src/assets/icons --sprite-out-dir ./public --sprite-ids-out-dir ./src/components"
   },
