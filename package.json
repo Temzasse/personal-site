@@ -8,6 +8,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
+    "format:check": "prettier --check .",
+    "format:write": "prettier --write .",
     "styled-system:generate": "panda codegen",
     "icons:generate": "figmage spritesheet --sprite-input ./src/assets/icons --sprite-out-dir ./public --sprite-ids-out-dir ./src/components"
   },

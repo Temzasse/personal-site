@@ -415,7 +415,8 @@ export function useSuspenseQueryDeferred(options) {
 > ✏️ **Updated (22.3.2025)**
 >
 > <br />
-> Changed the way the `isSuspending` flag is attached to the returned query object.
+> Changed the way the `isSuspending` flag is attached to the returned query
+> object.
 >
 > Before it was done by spreading the `query` and adding the `isSuspending` property
 > to it:
@@ -426,17 +427,19 @@ export function useSuspenseQueryDeferred(options) {
 > ```
 >
 > <br />
-> This was not optimal as it would disable [render optimizations](https://tanstack.com/query/v5/docs/framework/react/guides/render-optimizations#tracked-properties)
+> This was not optimal as it would disable [render
+> optimizations](https://tanstack.com/query/v5/docs/framework/react/guides/render-optimizations#tracked-properties)
 > in React Query.
 > <br />
-> The more optimal way is to attach the `isSuspending` flag directly to the query
-> object to maintain the property tracking in React Query.
+> The more optimal way is to attach the `isSuspending` flag directly to the
+> query object to maintain the property tracking in React Query.
 
 <br />
-By using our custom `useSuspenseQueryDeferred` hook instead of the default `useSuspenseQuery`
-hook we get exactly what we outlined before: the component suspends on initial load
-and shows the loading fallback but on subsequent fetches the component can use the
-`isSuspending` flag to show an inline loading indicator.
+By using our custom `useSuspenseQueryDeferred` hook instead of the default
+`useSuspenseQuery` hook we get exactly what we outlined before: the component
+suspends on initial load and shows the loading fallback but on subsequent
+fetches the component can use the `isSuspending` flag to show an inline loading
+indicator.
 
 However there is one small issue: `useDeferredValue` compares the old and the new
 value it receives with [Object.is](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/is)
@@ -581,11 +584,13 @@ data on demand (eg. when modal is opened) you probably should not use suspense f
 > 💡 My rule of thumb is:
 >
 > <br />
-> **Suspense for data fetching should only be used for non-dependant data that is rendering-critical.**
+> **Suspense for data fetching should only be used for non-dependant data that
+> is rendering-critical.**
 >
 > <br />
-> Meaning any data that is not dependant on other data (to avoid fetch waterfalls)
-> and is required to render a given view in a functionally complete state.
+> Meaning any data that is not dependant on other data (to avoid fetch
+> waterfalls) and is required to render a given view in a functionally complete
+> state.
 
 ---
 

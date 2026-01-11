@@ -17,7 +17,7 @@
       "@/styled": ["./src/styled-system/jsx"],
       "@/css": ["./src/styled-system/css"],
       "@/components/*": ["./src/components/*"],
-      "@/*": ["./src/*"],
+      "@/*": ["./src/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],

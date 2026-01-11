@@ -36,17 +36,17 @@ export const globalCss = defineGlobalStyles({
   },
 
   h1: {
-    color: '$text',
+    color: "$text",
     textStyle: "$heading.1",
     "&:not(.no-decoration)::before": headingDecoration,
   },
   h2: {
-    color: '$text',
+    color: "$text",
     textStyle: "$heading.2",
     "&:not(.no-decoration)::before": headingDecoration,
   },
   h3: {
-    color: '$text',
+    color: "$text",
     textStyle: "$heading.3",
     "&:not(.no-decoration)::before": headingDecoration,
   },

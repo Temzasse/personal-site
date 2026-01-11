@@ -13,10 +13,10 @@ export default defineConfig([
   },
   globalIgnores([
     // Default ignores of eslint-config-next:
-    '.next/**',
-    'out/**',
-    'build/**',
-    'next-env.d.ts',
-    './src/styled-system/**'
+    ".next/**",
+    "out/**",
+    "build/**",
+    "next-env.d.ts",
+    "./src/styled-system/**",
   ]),
 ]);
