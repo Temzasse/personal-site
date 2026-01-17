@@ -18,7 +18,7 @@ export default async function Home() {
       libraryName: "react-modal-sheet",
       repoUrl: "https://github.com/Temzasse/react-modal-sheet",
       image:
-        "https://github.com/Temzasse/react-modal-sheet/raw/main/media/banner.jpg",
+        "https://github.com/Temzasse/react-modal-sheet/raw/main/media/hero.jpg",
     },
     {
       title: "Figmage",
