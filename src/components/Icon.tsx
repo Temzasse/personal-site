@@ -1,8 +1,8 @@
-import { SVGAttributes, memo } from "react";
+import { type SVGAttributes, memo } from "react";
 
 import { type ids } from "./icons-ids";
-import { ColorToken, token } from "@/styled-system/tokens";
-import { TokenName } from "@/utils/styled-system";
+import { type ColorToken, token } from "#styled/tokens";
+import { type TokenName } from "#utils/styled-system";
 
 export type IconName = (typeof ids)[number];
 
@@ -22,7 +22,7 @@ function IconBase({ name, size, color, style, ...rest }: Props) {
         color:
           color === "currentColor"
             ? "currentColor"
-            : token.var(`$colors.${color}`),
+            : token.var(`colors.$${color}`),
       }}
       {...rest}
       aria-hidden

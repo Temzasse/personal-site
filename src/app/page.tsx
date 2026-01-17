@@ -1,11 +1,11 @@
 import Image from "next/image";
-import { Stack, VisuallyHidden, styled } from "@/styled";
 
+import { Stack, VisuallyHidden, styled } from "#styled/jsx";
 import headshotImg from "../assets/headshot.png";
 import { getPosts } from "./utils.server";
-import { PostCard } from "@/components/PostCard";
-import { GithubCard } from "@/components/GithubCard";
-import { Text } from "@/components/Text";
+import { PostCard } from "#components/PostCard";
+import { GithubCard } from "#components/GithubCard";
+import { Text } from "#components/Text";
 
 export default async function Home() {
   const posts = await getPosts();
@@ -42,7 +42,7 @@ export default async function Home() {
   return (
     <Stack direction="column" gap="$3xl">
       <VisuallyHidden>
-        <Text variant="heading.1">Teemu Taskula&lsquo;s blog</Text>
+        <Text variant="heading1">Teemu Taskula&lsquo;s blog</Text>
       </VisuallyHidden>
 
       <Stack direction={{ base: "column", md: "row" }} gap="$md">
@@ -67,7 +67,7 @@ export default async function Home() {
       </Stack>
 
       <Stack direction="column" gap="$md">
-        <Text variant="heading.2">Latest posts</Text>
+        <Text variant="heading2">Latest posts</Text>
 
         <RecentPosts>
           {posts.map((post) => (
@@ -84,7 +84,7 @@ export default async function Home() {
       </Stack>
 
       <Stack direction="column" gap="$md">
-        <Text variant="heading.2">Open source</Text>
+        <Text variant="heading2">Open source</Text>
 
         <RecentPosts>
           {githubRepos.map((repo) => (
@@ -111,8 +111,7 @@ const ImageWrapper = styled("div", {
     height: "70px",
     borderRadius: "50%",
     overflow: "hidden",
-    backgroundColor: "$primary.1",
-    border: "1px solid transparent",
+    backgroundColor: "$primary1",
   },
 });
 

@@ -10,16 +10,23 @@
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "preserve",
+    "jsx": "react-jsx",
     "incremental": true,
     "plugins": [{ "name": "next" }],
     "paths": {
-      "@/styled": ["./src/styled-system/jsx"],
-      "@/css": ["./src/styled-system/css"],
-      "@/components/*": ["./src/components/*"],
-      "@/*": ["./src/*"]
-    }
+      "#styled/*": ["./src/styled-system/*"],
+      "#components/*": ["./src/components/*"],
+      "#*": ["./src/*"]
+    },
+    "target": "ES2017"
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts",
+    "src/styled-system"
+  ],
   "exclude": ["node_modules"]
 }

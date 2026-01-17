@@ -1,11 +1,11 @@
-import { css } from "@/css";
+import { css } from "#styled/css";
 
 export const mdxStyles = css({
   "& > p": {
-    marginVertical: "$md",
+    marginBlock: "$md",
   },
   "& a": {
-    color: "$primary.1",
+    color: "$primary1",
     textDecoration: "underline",
     textDecorationSkipInk: "auto",
   },
@@ -13,7 +13,7 @@ export const mdxStyles = css({
     textStyle: "$bodyLarge",
 
     "& strong": {
-      color: "$primary.1",
+      color: "$primary1",
     },
   },
   "& h1": {
@@ -34,22 +34,22 @@ export const mdxStyles = css({
     maxWidth: "100%",
 
     "&:not(.shiki)": {
-      backgroundColor: "$neutral.1",
+      backgroundColor: "$neutral1",
     },
   },
   "& blockquote": {
-    marginVertical: "$md",
+    marginBlock: "$md",
     padding: "$md",
-    backgroundColor: "$neutral.1",
+    backgroundColor: "$neutral1",
     borderRadius: "$sm",
-    borderLeft: "4px solid {colors.$primary.1}",
+    borderLeft: "4px solid {colors.$primary1}",
 
     "& pre": {
       marginTop: "$md",
     },
   },
   "& ul": {
-    marginVertical: "$md",
+    marginBlock: "$md",
     paddingLeft: "$lg",
   },
   "& ul > li": {
@@ -60,13 +60,13 @@ export const mdxStyles = css({
     _before: {
       content: '"—"',
       display: "inline-block",
-      color: "$primary.3",
+      color: "$primary3",
       position: "absolute",
       marginLeft: "-$lg",
     },
   },
   "& ol": {
-    marginVertical: "$md",
+    marginBlock: "$md",
     paddingLeft: "$sm",
   },
   "& ol > li": {
@@ -78,14 +78,14 @@ export const mdxStyles = css({
   },
   "& p > code, & li > code": {
     padding: "$xs",
-    backgroundColor: "$neutral.1",
+    backgroundColor: "$neutral1",
     borderRadius: "$sm",
   },
   "& hr": {
     border: "none",
     height: "1px",
-    backgroundColor: "$neutral.1",
-    marginVertical: "$lg",
+    backgroundColor: "$neutral1",
+    marginBlock: "$lg",
   },
   "& .tweet": {
     display: "flex",

@@ -1,4 +1,4 @@
-import { Stack, styled } from "@/styled";
+import { Stack, styled } from "#styled/jsx";
 import { Icon } from "./Icon";
 import { Text } from "./Text";
 
@@ -26,17 +26,17 @@ export function GithubCard({
 
         <Content>
           <Stack direction="column" gap="$sm">
-            <Text variant="heading.3" as={titleLevel} className="no-decoration">
+            <Text variant="heading3" as={titleLevel} className="no-decoration">
               {title}
             </Text>
 
-            <Text variant="bodySmall" color="text.muted">
+            <Text variant="bodySmall" color="textMuted">
               {description}
             </Text>
           </Stack>
 
           <LibName>
-            <Icon name="github" size={16} color="text.muted" />
+            <Icon name="github" size={16} color="textMuted" />
             <span>{libraryName}</span>
           </LibName>
         </Content>
@@ -63,7 +63,7 @@ const Body = styled("div", {
   base: {
     flex: 1,
     borderBottom: "1px solid",
-    borderGlow: "$primary.1",
+    borderGlow: "$primary1",
     display: "flex",
     flexDirection: "column",
   },
@@ -93,7 +93,7 @@ const LibName = styled("div", {
     display: "flex",
     alignItems: "center",
     gap: "$sm",
-    backgroundColor: "$neutral.1",
+    backgroundColor: "$neutral1",
     padding: "$sm",
     borderRadius: "$sm",
     textStyle: "$code",

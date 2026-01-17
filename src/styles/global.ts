@@ -6,7 +6,7 @@ const headingDecoration = {
   left: "0px",
   height: "1em",
   width: "1px",
-  background: "$primary.1",
+  background: "$primary1",
 };
 
 export const globalCss = defineGlobalStyles({
@@ -22,7 +22,7 @@ export const globalCss = defineGlobalStyles({
     minHeight: "100%",
     padding: 0,
     backgroundColor: "$background",
-    color: "$text.muted",
+    color: "$textMuted",
     fontSize: "16px",
     fontFamily: "var(--font-dm-sans)",
     textRendering: "optimizeLegibility",
@@ -37,17 +37,17 @@ export const globalCss = defineGlobalStyles({
 
   h1: {
     color: "$text",
-    textStyle: "$heading.1",
+    textStyle: "$heading1",
     "&:not(.no-decoration)::before": headingDecoration,
   },
   h2: {
     color: "$text",
-    textStyle: "$heading.2",
+    textStyle: "$heading2",
     "&:not(.no-decoration)::before": headingDecoration,
   },
   h3: {
     color: "$text",
-    textStyle: "$heading.3",
+    textStyle: "$heading3",
     "&:not(.no-decoration)::before": headingDecoration,
   },
   p: {

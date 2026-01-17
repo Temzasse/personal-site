@@ -1,6 +1,6 @@
-import { Stack, styled } from "@/styled";
+import { Stack, styled } from "#styled/jsx";
 import { getPosts } from "../utils.server";
-import { PostCard } from "../../components/PostCard";
+import { PostCard } from "#components/PostCard";
 
 export default async function Blog() {
   const posts = await getPosts();

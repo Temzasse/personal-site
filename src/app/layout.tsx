@@ -5,8 +5,9 @@ import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
 import "./index.css";
+import '../styled-system/styles.css'
 import { Navbar } from "../components/Navbar";
-import { styled } from "@/styled";
+import { styled } from "#styled/jsx";
 
 const dmSans = DM_Sans({
   subsets: ["latin"],
@@ -91,7 +92,7 @@ const Main = styled("main", {
     padding: "$lg",
     paddingTop: "30vh",
     borderTop: "2px solid",
-    borderGlow: "$primary.1",
+    borderGlow: "$primary1",
     paddingBottom: "100px",
 
     "&:has(.blog-post)": {

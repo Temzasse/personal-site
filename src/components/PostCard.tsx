@@ -1,6 +1,7 @@
-import { styled } from "@/styled";
 import Image from "next/image";
 import Link from "next/link";
+
+import { styled } from "#styled/jsx";
 import { Text } from "./Text";
 
 type Props = {
@@ -18,7 +19,7 @@ export function PostCard({ title, titleLevel = "h2", image, slug }: Props) {
           <Image src={image} alt="" fill style={{ objectFit: "cover" }} />
         </ImageWrapper>
         <Content>
-          <Text variant="heading.3" as={titleLevel} className="no-decoration">
+          <Text variant="heading3" as={titleLevel} className="no-decoration">
             {title}
           </Text>
         </Content>
@@ -45,7 +46,7 @@ const Body = styled("div", {
   base: {
     flex: 1,
     borderBottom: "1px solid",
-    borderGlow: "$primary.1",
+    borderGlow: "$primary1",
     display: "flex",
     flexDirection: "column",
   },

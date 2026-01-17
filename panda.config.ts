@@ -1,16 +1,16 @@
 import { defineConfig } from "@pandacss/dev";
-import { globalCss } from "@/styles/global";
+import { globalCss } from "#styles/global";
 
 export default defineConfig({
   outdir: "src/styled-system",
+  importMap: "#styled",
   shorthands: false,
   preflight: true,
-  hash: {
-    className: true,
-    cssVar: false,
-  },
-  include: ["./src/**/*.{js,jsx,ts,tsx}"],
+  hash: { className: true, cssVar: false },
+  include: ["./src/**/*.{ts,tsx}"],
+  exclude: ["./src/styled-system/**/*"],
   jsxFramework: "react",
+  jsxStyleProps: "none",
   theme: {
     breakpoints: {
       sm: "640px",
@@ -44,50 +44,30 @@ export default defineConfig({
         full: { value: "9999px" },
       },
       colors: {
-        primary: {
-          1: { value: "#10b981" },
-          2: { value: "#059669" },
-          3: { value: "#047857" },
-          4: { value: "#065f46" },
-          5: { value: "#064e3b" },
-          6: { value: "#022c22" },
-        },
-        secondary: {
-          1: { value: "#f0abfc" },
-          2: { value: "#e879f9" },
-          3: { value: "#d946ef" },
-          4: { value: "#c026d3" },
-          5: { value: "#a21caf" },
-          6: { value: "#86198f" },
-        },
-        neutral: {
-          1: { value: "rgba(150, 150, 150, 0.1)" },
-          2: { value: "rgba(150, 150, 150, 0.2)" },
-          3: { value: "rgba(150, 150, 150, 0.3)" },
-          4: { value: "rgba(150, 150, 150, 0.4)" },
-          5: { value: "rgba(150, 150, 150, 0.5)" },
-          6: { value: "rgba(150, 150, 150, 0.6)" },
-        },
-        text: {
-          DEFAULT: {
-            value: "#ffffff",
-          },
-          muted: {
-            value: "#cecece",
-          },
-        },
-        background: {
-          value: "#000c18",
-        },
-        focusRing: {
-          value: "rgba(16, 185, 129, 0.5)",
-        },
-        hoverHighlight: {
-          value: "rgba(255, 255, 255, 0.05)",
-        },
-        pressHighlight: {
-          value: "rgba(255, 255, 255, 0.1)",
-        },
+        primary1: { value: "#10b981" },
+        primary2: { value: "#059669" },
+        primary3: { value: "#047857" },
+        primary4: { value: "#065f46" },
+        primary5: { value: "#064e3b" },
+        primary6: { value: "#022c22" },
+        secondary1: { value: "#f0abfc" },
+        secondary2: { value: "#e879f9" },
+        secondary3: { value: "#d946ef" },
+        secondary4: { value: "#c026d3" },
+        secondary5: { value: "#a21caf" },
+        secondary6: { value: "#86198f" },
+        neutral1: { value: "rgba(150, 150, 150, 0.1)" },
+        neutral2: { value: "rgba(150, 150, 150, 0.2)" },
+        neutral3: { value: "rgba(150, 150, 150, 0.3)" },
+        neutral4: { value: "rgba(150, 150, 150, 0.4)" },
+        neutral5: { value: "rgba(150, 150, 150, 0.5)" },
+        neutral6: { value: "rgba(150, 150, 150, 0.6)" },
+        text: { value: "#ffffff" },
+        textMuted: { value: "#cecece" },
+        background: { value: "#000c18" },
+        focusRing: { value: "rgba(16, 185, 129, 0.5)" },
+        hoverHighlight: { value: "rgba(255, 255, 255, 0.05)" },
+        pressHighlight: { value: "rgba(255, 255, 255, 0.1)" },
       },
     },
     textStyles: {
@@ -112,27 +92,25 @@ export default defineConfig({
           lineHeight: "1.5",
         },
       },
-      $heading: {
-        1: {
-          value: {
-            fontFamily: "var(--font-dm-serif)",
-            fontSize: `clamp(${rem(42)}, 5vw, ${rem(64)})`,
-            lineHeight: "1.3",
-          },
+      $heading1: {
+        value: {
+          fontFamily: "var(--font-dm-serif)",
+          fontSize: `clamp(${rem(42)}, 5vw, ${rem(64)})`,
+          lineHeight: "1.3",
         },
-        2: {
-          value: {
-            fontFamily: "var(--font-dm-serif)",
-            fontSize: `clamp(${rem(24)}, 3vw, ${rem(30)})`,
-            lineHeight: "1.3",
-          },
+      },
+      $heading2: {
+        value: {
+          fontFamily: "var(--font-dm-serif)",
+          fontSize: `clamp(${rem(24)}, 3vw, ${rem(30)})`,
+          lineHeight: "1.3",
         },
-        3: {
-          value: {
-            fontFamily: "var(--font-dm-serif)",
-            fontSize: `clamp(${rem(20)}, 3vw, ${rem(22)})`,
-            lineHeight: "1.3",
-          },
+      },
+      $heading3: {
+        value: {
+          fontFamily: "var(--font-dm-serif)",
+          fontSize: `clamp(${rem(20)}, 3vw, ${rem(22)})`,
+          lineHeight: "1.3",
         },
       },
       $code: {
@@ -161,9 +139,11 @@ export default defineConfig({
         };
       },
     },
-    visuallyHidden: {
+    $visuallyHidden: {
       className: "visually-hidden",
-      transform() {
+      values: { type: "boolean" },
+      transform(value: boolean) {
+        if (!value) return {};
         return {
           position: "absolute",
           width: "1px",
@@ -177,49 +157,11 @@ export default defineConfig({
         };
       },
     },
-    paddingHorizontal: {
-      className: "padding-horizontal",
-      values: "spacing",
-      transform(value) {
-        return {
-          "padding-left": value,
-          "padding-right": value,
-        };
-      },
-    },
-    paddingVertical: {
-      className: "padding-vertical",
-      values: "spacing",
-      transform(value) {
-        return {
-          "padding-top": value,
-          "padding-bottom": value,
-        };
-      },
-    },
-    marginHorizontal: {
-      className: "margin-horizontal",
-      values: "spacing",
-      transform(value) {
-        return {
-          "margin-left": value,
-          "margin-right": value,
-        };
-      },
-    },
-    marginVertical: {
-      className: "margin-vertical",
-      values: "spacing",
-      transform(value) {
-        return {
-          "margin-top": value,
-          "margin-bottom": value,
-        };
-      },
-    },
-    focusRing: {
+    $focusRing: {
       className: "focus-ring",
-      transform(_, { token }) {
+      values: { type: "boolean" },
+      transform(value: boolean, { token }) {
+        if (!value) return {};
         return {
           "&:focus-visible": {
             "box-shadow": `0px 0px 0px 2px ${token("colors.$focusRing")}`,
@@ -227,9 +169,11 @@ export default defineConfig({
         };
       },
     },
-    hoverHighlight: {
+    $hoverHighlight: {
       className: "hover-highlight",
-      transform(_, { token }) {
+      values: { type: "boolean" },
+      transform(value: boolean, { token }) {
+        if (!value) return {};
         return {
           "&:after": {
             content: '""',
@@ -241,17 +185,15 @@ export default defineConfig({
             borderRadius: "inherit",
             pointerEvents: "none",
           },
-          "&:hover": {
-            "&:after": {
-              opacity: 1,
-            },
-          },
+          "&:hover": { "&:after": { opacity: 1 } },
         };
       },
     },
-    pressHighlight: {
+    $pressHighlight: {
       className: "press-highlight",
-      transform(_, { token }) {
+      values: { type: "boolean" },
+      transform(value: boolean, { token }) {
+        if (!value) return {};
         return {
           "&:after": {
             content: '""',
@@ -263,23 +205,19 @@ export default defineConfig({
             borderRadius: "inherit",
             pointerEvents: "none",
           },
-          "&:active": {
-            "&:after": {
-              opacity: 1,
-            },
-          },
+          "&:active": { "&:after": { opacity: 1 } },
         };
       },
     },
-    pressOpacity: {
+    $pressOpacity: {
       className: "press-opacity",
-      transform() {
+      values: { type: "boolean" },
+      transform(value: boolean) {
+        if (!value) return {};
         return {
           opacity: 1,
           transition: "opacity 50ms linear",
-          "&:active": {
-            opacity: 0.7,
-          },
+          "&:active": { opacity: 0.7 },
         };
       },
     },
@@ -287,8 +225,19 @@ export default defineConfig({
   hooks: {
     "tokens:created": ({ configure }) => {
       configure({
+        /**
+         * Add $ prefix to token names so that it is clear that they are tokens.
+         * Note that the `path` is an array of strings that represent the token path,
+         * e.g. ['colors', 'primary'] for colors.primary but it can also be just
+         * the token name, e.g. ['primary'] so we only want to add the $ prefix
+         * to the last part of the path which is the actual token name.
+         */
         formatTokenName: (path) => {
-          return "$" + path.join(".");
+          const last = path[path.length - 1];
+          const rest = path.slice(0, -1);
+          if (!last && rest.length === 0) return "";
+          const name = [...rest, `$${last}`].join(".");
+          return name;
         },
       });
     },

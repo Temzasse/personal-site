@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useSelectedLayoutSegment } from "next/navigation";
 
-import { styled } from "@/styled";
+import { styled } from "#styled/jsx";
 import { Icon } from "./Icon";
 
 export function Navbar() {
@@ -17,7 +17,7 @@ export function Navbar() {
             <Icon
               name="home"
               size={24}
-              color={segment === null ? "primary.1" : "text"}
+              color={segment === null ? "primary1" : "text"}
             />
             <span>Home</span>
           </NavLink>
@@ -27,7 +27,7 @@ export function Navbar() {
             <Icon
               name="pen"
               size={24}
-              color={segment === "blog" ? "primary.1" : "text"}
+              color={segment === "blog" ? "primary1" : "text"}
             />
             <span>Blog</span>
           </NavLink>
@@ -70,11 +70,11 @@ const Nav = styled("nav", {
 const NavItems = styled("ul", {
   base: {
     display: "flex",
-    backgroundColor: "$primary.6/70",
     borderRadius: "$full",
     overflow: "hidden",
     backdropFilter: "blur(20px)",
     boxShadow: "inset 0px 1px 2px rgba(255, 255, 255, 0.1)",
+    backgroundColor: "$primary6/70",
   },
 });
 
@@ -91,7 +91,7 @@ const NavLink = styled(Link, {
     alignItems: "center",
     gap: "$sm",
     padding: "$md",
-    hoverHighlight: 1,
+    $hoverHighlight: true,
 
     "&:first-child": {
       paddingLeft: "$lg",
@@ -102,7 +102,7 @@ const NavLink = styled(Link, {
 
     smDown: {
       "& span": {
-        visuallyHidden: 1,
+        $visuallyHidden: true,
       },
     },
   },
@@ -110,7 +110,7 @@ const NavLink = styled(Link, {
     isActive: {
       true: {
         textDecoration: "underline",
-        color: "$primary.1",
+        color: "$primary1",
       },
     },
   },

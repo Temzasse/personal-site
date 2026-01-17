@@ -1,5 +1,6 @@
-import { styled } from "@/styled";
-import Image, { ImageProps } from "next/image";
+import Image, { type ImageProps } from "next/image";
+
+import { styled } from "#styled/jsx";
 
 type Props = ImageProps & {
   credit: string;
@@ -22,7 +23,7 @@ const Wrapper = styled("div", {
     marginTop: "-10vh",
     overflow: "hidden",
     position: "relative",
-    backgroundColor: "$neutral.1",
+    backgroundColor: "$neutral1",
     boxShadow: "0px 0px 0px 1px rgba(150, 150, 150, 0.08)",
     "& img": {
       objectFit: "cover",
